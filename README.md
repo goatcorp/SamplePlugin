@@ -12,7 +12,7 @@ I'm mostly hoping this helps some people to build out their UIs without having t
 * Hides data files from visual studio to reduce clutter
   * Also allows having data files in different paths than VS would usually allow if done in the IDE directly
 
-###### SamplePlugin
+#### SamplePlugin
 * Simple functional plugin
   * Slash command
   * Main UI
@@ -26,7 +26,7 @@ I'm mostly hoping this helps some people to build out their UIs without having t
 
 By default, building should out directly into the XIVLauncher's DevPlugins and be automatically loaded upon game launch.
 
-###### UIDev
+#### UIDev
 * Basic ImGui testbed application project
   * Allows testing UI changes without needing to run the game
   * UI environment provided should match what is seen in game

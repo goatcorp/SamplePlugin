@@ -16,15 +16,15 @@ namespace AetherSenseRedux
 
         public Device(ButtplugClientDevice clientDevice)
         {
-            this.ClientDevice = clientDevice;
-            this.Patterns = new List<IPattern>();
-            this._lastIntensity = 0;
-            this._active = true;
+            ClientDevice = clientDevice;
+            Patterns = new List<IPattern>();
+            _lastIntensity = 0;
+            _active = true;
         }
 
         public async Task Run()
         {
-            while (this._active)
+            while (_active)
             {
                 await OnTick();
                 await Task.Delay(10);
@@ -33,8 +33,8 @@ namespace AetherSenseRedux
 
         public void Stop()
         {
-            this._active = false;
-            this.Patterns.Clear();
+            _active = false;
+            Patterns.Clear();
 
             var t = Task.Run(() => WriteAsync(0));
             t.Wait();
@@ -51,7 +51,7 @@ namespace AetherSenseRedux
                 }
                 catch (Exception)
                 {
-                    this.Patterns.Remove(pattern);
+                    Patterns.Remove(pattern);
                 }
             }
 
@@ -65,16 +65,16 @@ namespace AetherSenseRedux
         {
             double clampedIntensity = Clamp(intensity, 0, 1);
 
-            if (this._lastIntensity == clampedIntensity)
+            if (_lastIntensity == clampedIntensity)
             {
                 return;
             }
 
-            this._lastIntensity = clampedIntensity;
+            _lastIntensity = clampedIntensity;
 
-            await this.ClientDevice.SendVibrateCmd(clampedIntensity);
+            await ClientDevice.SendVibrateCmd(clampedIntensity);
         }
-        private double Clamp(double value, double min, double max)
+        private static double Clamp(double value, double min, double max)
         {
             return (value < min) ? min : (value > max) ? max : value;
         }

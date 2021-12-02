@@ -2,7 +2,7 @@
 using Dalamud.Plugin;
 using System;
 
-namespace SamplePlugin
+namespace AetherSenseRedux
 {
     [Serializable]
     public class Configuration : IPluginConfiguration
@@ -10,6 +10,9 @@ namespace SamplePlugin
         public int Version { get; set; } = 0;
 
         public bool SomePropertyToBeSavedAndWithADefault { get; set; } = true;
+
+        public bool Enabled { get; set; } = true;
+        public string Address { get; set; } = string.Empty;
 
         // the below exist just to make saving less cumbersome
 
@@ -23,7 +26,7 @@ namespace SamplePlugin
 
         public void Save()
         {
-            this.pluginInterface!.SavePluginConfig(this);
+            pluginInterface!.SavePluginConfig(this);
         }
     }
 }

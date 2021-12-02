@@ -1,67 +1,139 @@
 ﻿using Dalamud.Game.Command;
 using Dalamud.IoC;
 using Dalamud.Plugin;
+using Dalamud.Logging;
+
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
-namespace SamplePlugin
+using Buttplug;
+
+namespace AetherSenseRedux
 {
     public sealed class Plugin : IDalamudPlugin
     {
-        public string Name => "Sample Plugin";
+        public string Name => "AetherSense Redux";
 
-        private const string commandName = "/pmycommand";
+        private const string commandName = "/as";
 
         private DalamudPluginInterface PluginInterface { get; init; }
         private CommandManager CommandManager { get; init; }
         private Configuration Configuration { get; init; }
         private PluginUI PluginUi { get; init; }
 
+        private ButtplugClient Buttplug;
+
+        private List<Device> DevicePool;
+
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
             [RequiredVersion("1.0")] CommandManager commandManager)
         {
-            this.PluginInterface = pluginInterface;
-            this.CommandManager = commandManager;
+            PluginInterface = pluginInterface;
+            CommandManager = commandManager;
 
-            this.Configuration = this.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
-            this.Configuration.Initialize(this.PluginInterface);
+            Buttplug = new ButtplugClient("AetherSense Redux");
+            Buttplug.DeviceAdded += OnDeviceAdded;
+            Buttplug.DeviceRemoved += OnDeviceRemoved;
+            Buttplug.ScanningFinished += OnScanComplete;
+
+            this.DevicePool = new List<Device>();
+
+            Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
+            Configuration.Initialize(PluginInterface);
 
             // you might normally want to embed resources and load them from the manifest stream
             var assemblyLocation = Assembly.GetExecutingAssembly().Location;
-            var imagePath = Path.Combine(Path.GetDirectoryName(assemblyLocation)!, "goat.png");
-            var goatImage = this.PluginInterface.UiBuilder.LoadImage(imagePath);
-            this.PluginUi = new PluginUI(this.Configuration, goatImage);
+            PluginUi = new PluginUI(Configuration);
 
-            this.CommandManager.AddHandler(commandName, new CommandInfo(OnCommand)
+            CommandManager.AddHandler(commandName, new CommandInfo(OnShowUI)
             {
-                HelpMessage = "A useful message to display in /xlhelp"
+                HelpMessage = "Opens the Aether Sense Redux configuration window"
             });
 
-            this.PluginInterface.UiBuilder.Draw += DrawUI;
-            this.PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
+            PluginInterface.UiBuilder.Draw += DrawUI;
+            PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
         }
 
         public void Dispose()
         {
-            this.PluginUi.Dispose();
-            this.CommandManager.RemoveHandler(commandName);
+            foreach (Device device in DevicePool)
+            {
+                try
+                {
+                    device.Stop();
+                }
+                catch (Exception)
+                {
+                    PluginLog.Error("Could not stop device {0}, device disconnected?", device.ClientDevice.Name);
+                }
+                this.DevicePool.Remove(device);
+            }
+            PluginUi.Dispose();
+            CommandManager.RemoveHandler(commandName);
         }
 
-        private void OnCommand(string command, string args)
+        private void OnDeviceAdded(object? sender, DeviceAddedEventArgs e)
+        {
+            PluginLog.Information("Device {0} added", e.Device.Name);
+            this.DevicePool.Add(new Device(e.Device));
+        }
+
+        private void OnDeviceRemoved(object? sender, DeviceRemovedEventArgs e)
+        {
+            PluginLog.Information("Device {0} removed", e.Device.Name);
+            foreach (Device device in this.DevicePool)
+            {
+                if (device.ClientDevice == e.Device)
+                {
+                    try
+                    {
+                        device.Stop();
+                    }
+                    catch (Exception)
+                    {
+                        PluginLog.Error("Could not stop device {0}, device disconnected?", device.Name);
+                    }
+                    this.DevicePool.Remove(device);
+                }
+            }
+        }
+
+        private void OnScanComplete(object? sender, EventArgs e)
+        {
+            Task.Run(DoScan);
+        }
+
+        private async Task DoScan()
+        {
+            await Task.Delay(1000);
+            try
+            {
+                await Buttplug.StartScanningAsync();
+            }
+            catch (Exception ex)
+            {
+                PluginLog.Error(ex, "Asynchronous scanning failed.");
+            }
+        }
+
+        private void OnShowUI(string command, string args)
         {
             // in response to the slash command, just display our main ui
-            this.PluginUi.Visible = true;
+            PluginUi.Visible = true;
         }
 
         private void DrawUI()
         {
-            this.PluginUi.Draw();
+            PluginUi.Draw();
         }
 
         private void DrawConfigUI()
         {
-            this.PluginUi.SettingsVisible = true;
+            PluginUi.SettingsVisible = true;
         }
     }
 }

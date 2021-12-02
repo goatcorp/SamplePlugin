@@ -2,7 +2,7 @@
 using System;
 using System.Numerics;
 
-namespace SamplePlugin
+namespace AetherSenseRedux
 {
     // It is good to have this be disposable in general, in case you ever need it
     // to do any cleanup
@@ -10,33 +10,30 @@ namespace SamplePlugin
     {
         private Configuration configuration;
 
-        private ImGuiScene.TextureWrap goatImage;
-
         // this extra bool exists for ImGui, since you can't ref a property
         private bool visible = false;
         public bool Visible
         {
-            get { return this.visible; }
-            set { this.visible = value; }
+            get { return visible; }
+            set { visible = value; }
         }
 
         private bool settingsVisible = false;
         public bool SettingsVisible
         {
-            get { return this.settingsVisible; }
-            set { this.settingsVisible = value; }
+            get { return settingsVisible; }
+            set { settingsVisible = value; }
         }
 
         // passing in the image here just for simplicity
-        public PluginUI(Configuration configuration, ImGuiScene.TextureWrap goatImage)
+        public PluginUI(Configuration configuration)
         {
             this.configuration = configuration;
-            this.goatImage = goatImage;
         }
 
         public void Dispose()
         {
-            this.goatImage.Dispose();
+
         }
 
         public void Draw()
@@ -61,9 +58,9 @@ namespace SamplePlugin
 
             ImGui.SetNextWindowSize(new Vector2(375, 330), ImGuiCond.FirstUseEver);
             ImGui.SetNextWindowSizeConstraints(new Vector2(375, 330), new Vector2(float.MaxValue, float.MaxValue));
-            if (ImGui.Begin("My Amazing Window", ref this.visible, ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse))
+            if (ImGui.Begin("My Amazing Window", ref visible, ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse))
             {
-                ImGui.Text($"The random config bool is {this.configuration.SomePropertyToBeSavedAndWithADefault}");
+                ImGui.Text($"The random config bool is {configuration.SomePropertyToBeSavedAndWithADefault}");
 
                 if (ImGui.Button("Show Settings"))
                 {
@@ -74,7 +71,6 @@ namespace SamplePlugin
 
                 ImGui.Text("Have a goat:");
                 ImGui.Indent(55);
-                ImGui.Image(this.goatImage.ImGuiHandle, new Vector2(this.goatImage.Width, this.goatImage.Height));
                 ImGui.Unindent(55);
             }
             ImGui.End();
@@ -88,16 +84,16 @@ namespace SamplePlugin
             }
 
             ImGui.SetNextWindowSize(new Vector2(232, 75), ImGuiCond.Always);
-            if (ImGui.Begin("A Wonderful Configuration Window", ref this.settingsVisible,
+            if (ImGui.Begin("A Wonderful Configuration Window", ref settingsVisible,
                 ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse))
             {
                 // can't ref a property, so use a local copy
-                var configValue = this.configuration.SomePropertyToBeSavedAndWithADefault;
+                var configValue = configuration.SomePropertyToBeSavedAndWithADefault;
                 if (ImGui.Checkbox("Random Config Bool", ref configValue))
                 {
-                    this.configuration.SomePropertyToBeSavedAndWithADefault = configValue;
+                    configuration.SomePropertyToBeSavedAndWithADefault = configValue;
                     // can save immediately on change, if you don't want to provide a "Save and Close" button
-                    this.configuration.Save();
+                    configuration.Save();
                 }
             }
             ImGui.End();

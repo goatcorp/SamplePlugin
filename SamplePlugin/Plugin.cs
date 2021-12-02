@@ -2,6 +2,8 @@
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Logging;
+using Dalamud.Game.Text;
+using Dalamud.Game.Text.SeStringHandling;
 
 using System;
 using System.Collections.Generic;
@@ -28,6 +30,8 @@ namespace AetherSenseRedux
 
         private List<Device> DevicePool;
 
+        private List<ChatTrigger> ChatTriggerPool;
+
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
             [RequiredVersion("1.0")] CommandManager commandManager)
@@ -41,6 +45,7 @@ namespace AetherSenseRedux
             Buttplug.ScanningFinished += OnScanComplete;
 
             this.DevicePool = new List<Device>();
+            this.ChatTriggerPool = new List<ChatTrigger>();
 
             Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             Configuration.Initialize(PluginInterface);
@@ -105,6 +110,14 @@ namespace AetherSenseRedux
         private void OnScanComplete(object? sender, EventArgs e)
         {
             Task.Run(DoScan);
+        }
+
+        private void OnChatReceived(XivChatType type, uint senderId, ref SeString sender, ref SeString message, ref bool isHandled)
+        {
+            foreach (ChatTrigger t in ChatTriggerPool)
+            {
+                t.Match(type, sender.TextValue, message.TextValue);
+            }
         }
 
         private async Task DoScan()

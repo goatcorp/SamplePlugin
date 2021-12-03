@@ -114,9 +114,25 @@ namespace AetherSenseRedux
 
         private void OnChatReceived(XivChatType type, uint senderId, ref SeString sender, ref SeString message, ref bool isHandled)
         {
+            ChatMessage chatMessage = new ChatMessage(type, senderId, ref sender, ref message, ref isHandled);
             foreach (ChatTrigger t in ChatTriggerPool)
             {
-                t.Match(type, sender.TextValue, message.TextValue);
+                if (t.Enabled)
+                {
+                    t.Queue(chatMessage);
+                }
+            }
+        }
+
+        private async Task MainLoop()
+        {
+            //register OnChatReceived handler
+
+            //attempt to connect
+
+            while (Configuration.Enabled)
+            {
+                await Task.Delay(10);
             }
         }
 

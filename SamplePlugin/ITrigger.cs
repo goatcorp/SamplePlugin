@@ -8,5 +8,6 @@ namespace AetherSenseRedux
 {
     internal interface ITrigger
     {
+        bool Enabled { get; set; }
     }
 }

@@ -6,19 +6,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AetherSenseRedux
+namespace AetherSenseRedux.Triggers
 {
     internal class ChatTrigger
     {
         public bool Enabled { get; set; }
         private string Name;
         private string Regex;
-        private Type Pattern;
+        private string Pattern;
 
         private List<ChatMessage> _messages;
         private List<Device> _devices;
 
-        public ChatTrigger(string name, string regex, Type pattern, ref List<Device> devices)
+        public ChatTrigger(string name, string regex, string pattern, ref List<Device> devices)
         {
             Enabled = true;
             Name = name;
@@ -28,7 +28,7 @@ namespace AetherSenseRedux
             _devices = devices;
         }
 
-       
+
         public void Queue(ChatMessage message)
         {
             _messages.Add(message);
@@ -70,7 +70,7 @@ namespace AetherSenseRedux
 
         public override string ToString()
         {
-            return String.Format("<{0}> {1}",Sender.TextValue,Message.TextValue);
+            return string.Format("<{0}> {1}", Sender.TextValue, Message.TextValue);
         }
     }
 }

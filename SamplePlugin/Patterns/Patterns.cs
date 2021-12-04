@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AetherSenseRedux
+namespace AetherSenseRedux.Patterns
 {
     internal class ConstantPattern : IPattern
     {

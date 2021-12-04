@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 
 using Buttplug;
+using AetherSenseRedux.Triggers;
 
 namespace AetherSenseRedux
 {

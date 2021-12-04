@@ -9,7 +9,7 @@ namespace AetherSenseRedux
     internal class Device
     {
         public readonly ButtplugClientDevice ClientDevice;
-        public List<IPattern> Patterns;
+        public List<Patterns.IPattern> Patterns;
         public string Name { get => ClientDevice.Name; }
         private double _lastIntensity;
         private bool _active;
@@ -17,7 +17,7 @@ namespace AetherSenseRedux
         public Device(ButtplugClientDevice clientDevice)
         {
             ClientDevice = clientDevice;
-            Patterns = new List<IPattern>();
+            Patterns = new List<Patterns.IPattern>();
             _lastIntensity = 0;
             _active = true;
         }

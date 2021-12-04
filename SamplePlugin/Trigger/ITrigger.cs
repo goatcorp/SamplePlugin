@@ -9,5 +9,7 @@ namespace AetherSenseRedux.Trigger
     internal interface ITrigger
     {
         bool Enabled { get; set; }
+        void OnMatch();
+        Task Run();
     }
 }

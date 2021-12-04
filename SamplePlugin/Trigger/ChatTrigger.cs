@@ -34,7 +34,10 @@ namespace AetherSenseRedux.Trigger
 
         public void Queue(ChatMessage message)
         {
-            _messages.Add(message);
+            if (Enabled)
+            {
+                _messages.Add(message);
+            }
         }
 
         private void OnMatch()

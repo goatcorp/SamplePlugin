@@ -78,7 +78,7 @@ namespace AetherSenseRedux.Trigger
                     {
                         //TODO: search for match and call OnTrigger() if matched
                         _messages.Remove(message);
-                        await Task.Delay(1);
+                        await Task.Yield();
                     }
                 }
                 await Task.Delay(10);

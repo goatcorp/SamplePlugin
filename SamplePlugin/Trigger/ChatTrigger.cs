@@ -11,24 +11,34 @@ namespace AetherSenseRedux.Trigger
 {
     internal class ChatTrigger
     {
+        // ITrigger properties
         public bool Enabled { get; set; }
-        private string Name;
-        private string Regex;
-        private string Pattern;
-        private Dictionary<string, object> PatternSettings;
-
-        private List<ChatMessage> _messages;
+        public string Name;
         private List<Device> _devices;
+        private List<string> _enabledDevices;
+        private string _pattern;
+        private Dictionary<string, object> _patternSettings;
 
-        public ChatTrigger(string name, string regex, string pattern, ref List<Device> devices, Dictionary<string,object> patternSettings)
+        // ChatTrigger properties
+        private List<ChatMessage> _messages;
+        private string _regex;
+        private long _retriggerDelay;
+
+        public ChatTrigger(string name, ref List<Device> devices, List<string> enabledDevices, string pattern, Dictionary<string,object> patternSettings, string regex, long retriggerDelay)
         {
+            // ITrigger properties
             Enabled = true;
             Name = name;
-            Regex = regex;
-            Pattern = pattern;
-            PatternSettings = patternSettings;
+            _devices = devices;
+            _enabledDevices = enabledDevices;
+            _pattern = pattern;
+            _patternSettings = patternSettings;
+
+            // ChatTrigger properties
             _messages = new List<ChatMessage>();
-            this._devices = devices;
+            _regex = regex;
+            _retriggerDelay = retriggerDelay;
+
         }
 
 
@@ -40,11 +50,15 @@ namespace AetherSenseRedux.Trigger
             }
         }
 
-        private void OnMatch()
+        private void OnTrigger()
         {
             foreach (Device device in _devices)
             {
-                device.Patterns.Add(PatternFactory.GetPatternFromString(Pattern,PatternSettings));
+                if (_enabledDevices.Contains(device.Name))
+                {
+                    device.Patterns.Add(PatternFactory.GetPatternFromString(_pattern, _patternSettings));
+                }
+
             }
         }
 
@@ -56,7 +70,7 @@ namespace AetherSenseRedux.Trigger
                 {
                     foreach (ChatMessage message in _messages)
                     {
-                        //TODO: search for match and call OnMatch() if matched
+                        //TODO: search for match and call OnTrigger() if matched
                         _messages.Remove(message);
                         await Task.Delay(1);
                     }

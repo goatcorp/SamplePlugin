@@ -23,6 +23,7 @@ namespace AetherSenseRedux.Trigger
         private List<ChatMessage> _messages;
         private string _regex;
         private long _retriggerDelay;
+        private DateTime _retriggerTime;
 
         public ChatTrigger(string name, ref List<Device> devices, List<string> enabledDevices, string pattern, Dictionary<string,object> patternSettings, string regex, long retriggerDelay)
         {
@@ -38,6 +39,7 @@ namespace AetherSenseRedux.Trigger
             _messages = new List<ChatMessage>();
             _regex = regex;
             _retriggerDelay = retriggerDelay;
+            _retriggerTime = DateTime.MinValue;
 
         }
 
@@ -52,6 +54,10 @@ namespace AetherSenseRedux.Trigger
 
         private void OnTrigger()
         {
+            if ((_retriggerDelay > 0) && (DateTime.UtcNow > _retriggerTime))
+            {
+                _retriggerTime = DateTime.UtcNow + TimeSpan.FromMilliseconds(_retriggerDelay);
+            }
             foreach (Device device in _devices)
             {
                 if (_enabledDevices.Contains(device.Name))

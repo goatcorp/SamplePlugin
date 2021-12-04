@@ -54,6 +54,7 @@ namespace AetherSenseRedux.Trigger
                     foreach (ChatMessage message in _messages)
                     {
                         //TODO: search for match and call OnMatch() if matched
+                        _messages.Remove(message);
                         await Task.Delay(1);
                     }
                 }

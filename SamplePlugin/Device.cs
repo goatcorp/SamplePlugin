@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AetherSenseRedux.Pattern;
 using Buttplug;
 
 namespace AetherSenseRedux
@@ -9,7 +10,7 @@ namespace AetherSenseRedux
     internal class Device
     {
         public readonly ButtplugClientDevice ClientDevice;
-        public List<Patterns.IPattern> Patterns;
+        public List<IPattern> Patterns;
         public string Name { get => ClientDevice.Name; }
         private double _lastIntensity;
         private bool _active;
@@ -17,7 +18,7 @@ namespace AetherSenseRedux
         public Device(ButtplugClientDevice clientDevice)
         {
             ClientDevice = clientDevice;
-            Patterns = new List<Patterns.IPattern>();
+            Patterns = new List<IPattern>();
             _lastIntensity = 0;
             _active = true;
         }
@@ -49,7 +50,7 @@ namespace AetherSenseRedux
                 {
                     intensities.Add(pattern.GetIntensityAtTime(DateTime.UtcNow));
                 }
-                catch (Exception)
+                catch (PatternExpiredException)
                 {
                     Patterns.Remove(pattern);
                 }

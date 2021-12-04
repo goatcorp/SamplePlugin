@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AetherSenseRedux.Patterns
+namespace AetherSenseRedux.Trigger
 {
-    internal class PatternFactory
+    internal interface ITrigger
     {
-        
+        bool Enabled { get; set; }
     }
 }

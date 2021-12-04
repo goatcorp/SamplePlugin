@@ -12,7 +12,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 
 using Buttplug;
-using AetherSenseRedux.Triggers;
+using AetherSenseRedux.Trigger;
 
 namespace AetherSenseRedux
 {
@@ -84,8 +84,12 @@ namespace AetherSenseRedux
 
         private void OnDeviceAdded(object? sender, DeviceAddedEventArgs e)
         {
+
             PluginLog.Information("Device {0} added", e.Device.Name);
-            this.DevicePool.Add(new Device(e.Device));
+            Device newDevice = new Device(e.Device);
+            this.DevicePool.Add(newDevice);
+            Task.Run(() => newDevice.Run());
+
         }
 
         private void OnDeviceRemoved(object? sender, DeviceRemovedEventArgs e)

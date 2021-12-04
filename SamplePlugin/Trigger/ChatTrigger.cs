@@ -1,4 +1,5 @@
-﻿using Dalamud.Game.Text;
+﻿using AetherSenseRedux.Pattern;
+using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AetherSenseRedux.Triggers
+namespace AetherSenseRedux.Trigger
 {
     internal class ChatTrigger
     {
@@ -14,24 +15,34 @@ namespace AetherSenseRedux.Triggers
         private string Name;
         private string Regex;
         private string Pattern;
+        private Dictionary<string, object> PatternSettings;
 
         private List<ChatMessage> _messages;
         private List<Device> _devices;
 
-        public ChatTrigger(string name, string regex, string pattern, ref List<Device> devices)
+        public ChatTrigger(string name, string regex, string pattern, ref List<Device> devices, Dictionary<string,object> patternSettings)
         {
             Enabled = true;
             Name = name;
             Regex = regex;
             Pattern = pattern;
+            PatternSettings = patternSettings;
             _messages = new List<ChatMessage>();
-            _devices = devices;
+            this._devices = devices;
         }
 
 
         public void Queue(ChatMessage message)
         {
             _messages.Add(message);
+        }
+
+        private void OnMatch()
+        {
+            foreach (Device device in _devices)
+            {
+                device.Patterns.Add(PatternFactory.GetPatternFromString(Pattern,PatternSettings));
+            }
         }
 
         public async Task Run()
@@ -42,7 +53,8 @@ namespace AetherSenseRedux.Triggers
                 {
                     foreach (ChatMessage message in _messages)
                     {
-
+                        //TODO: search for match and call OnMatch() if matched
+                        await Task.Delay(1);
                     }
                 }
                 await Task.Delay(10);

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AetherSenseRedux.Patterns
+namespace AetherSenseRedux.Pattern
 {
 
     internal interface IPattern

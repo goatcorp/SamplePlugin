@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AetherSenseRedux.Triggers
+namespace AetherSenseRedux.Trigger
 {
-    internal interface ITrigger
+    internal class TriggerFactory
     {
-        bool Enabled { get; set; }
     }
 }

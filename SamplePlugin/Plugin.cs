@@ -27,11 +27,11 @@ namespace AetherSenseRedux
         private Configuration Configuration { get; init; }
         private PluginUI PluginUi { get; init; }
 
-        private ButtplugClient Buttplug;
+        private readonly ButtplugClient Buttplug;
 
-        private List<Device> DevicePool;
+        private readonly List<Device> DevicePool;
 
-        private List<ChatTrigger> ChatTriggerPool;
+        private readonly List<ChatTrigger> ChatTriggerPool;
 
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,

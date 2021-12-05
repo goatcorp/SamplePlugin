@@ -17,7 +17,7 @@ namespace AetherSenseRedux.Pattern
                 case "Ramp":
                     return new RampPattern(settings);
                 default:
-                    throw new ArgumentException();
+                    throw new ArgumentException(String.Format("Invalid pattern {0} specified",name));
             }
         }
     }

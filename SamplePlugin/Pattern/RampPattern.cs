@@ -9,15 +9,15 @@ namespace AetherSenseRedux.Pattern
     internal class RampPattern : IPattern
     {
         public DateTime Expires { get; set; }
-        private readonly double minLevel;
-        private readonly double maxLevel;
+        private readonly double startLevel;
+        private readonly double endLevel;
         private readonly long duration;
 
 
         public RampPattern(Dictionary<string, object> config)
         {
-            minLevel = (double)config["min"];
-            maxLevel = (double)config["max"];
+            startLevel = (double)config["start"];
+            endLevel = (double)config["end"];
             this.duration = (long)config["duration"];
             Expires = DateTime.UtcNow + TimeSpan.FromMilliseconds(duration);
         }
@@ -29,7 +29,7 @@ namespace AetherSenseRedux.Pattern
                 throw new PatternExpiredException();
             }
             double progress = (Expires.Ticks - time.Ticks) / TimeSpan.FromMilliseconds(duration).Ticks;
-            return (maxLevel - minLevel) * progress + minLevel;
+            return (endLevel - startLevel) * progress + startLevel;
         }
     }
 }

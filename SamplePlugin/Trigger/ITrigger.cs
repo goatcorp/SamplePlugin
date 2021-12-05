@@ -10,10 +10,10 @@ namespace AetherSenseRedux.Trigger
     {
         bool Enabled { get; set; }
         string Name { get; init; }
-        List<Device> _devices { get; init; }
-        List<string> _enabledDevices { get; init; }
-        string _pattern { get; init; }
-        Dictionary<string, object> _patternSettings { get; init; }
+        List<Device> Devices { get; init; }
+        List<string> EnabledDevices { get; init; }
+        string Pattern { get; init; }
+        Dictionary<string, object> PatternSettings { get; init; }
 
         void OnTrigger();
         Task Run();

@@ -14,15 +14,15 @@ namespace AetherSenseRedux.Trigger
         // ITrigger properties
         public bool Enabled { get; set; }
         public string Name;
-        private List<Device> _devices;
-        private List<string> _enabledDevices;
-        private string _pattern;
-        private Dictionary<string, object> _patternSettings;
+        private readonly List<Device> Devices;
+        private readonly List<string> EnabledDevices;
+        private readonly string Pattern;
+        private readonly Dictionary<string, object> PatternSettings;
 
         // ChatTrigger properties
-        private List<ChatMessage> _messages;
-        private string _regex;
-        private long _retriggerDelay;
+        private readonly List<ChatMessage> _messages;
+        private readonly string _regex;
+        private readonly long _retriggerDelay;
         private DateTime _retriggerTime;
 
         public ChatTrigger(string name, ref List<Device> devices, List<string> enabledDevices, string pattern, Dictionary<string,object> patternSettings, string regex, long retriggerDelay)
@@ -30,10 +30,10 @@ namespace AetherSenseRedux.Trigger
             // ITrigger properties
             Enabled = true;
             Name = name;
-            _devices = devices;
-            _enabledDevices = enabledDevices;
-            _pattern = pattern;
-            _patternSettings = patternSettings;
+            Devices = devices;
+            EnabledDevices = enabledDevices;
+            Pattern = pattern;
+            PatternSettings = patternSettings;
 
             // ChatTrigger properties
             _messages = new List<ChatMessage>();
@@ -65,11 +65,11 @@ namespace AetherSenseRedux.Trigger
                     _retriggerTime = DateTime.UtcNow + TimeSpan.FromMilliseconds(_retriggerDelay);
                 }
             }
-            foreach (Device device in _devices)
+            foreach (Device device in Devices)
             {
-                if (_enabledDevices.Contains(device.Name))
+                if (EnabledDevices.Contains(device.Name))
                 {
-                    device.Patterns.Add(PatternFactory.GetPatternFromString(_pattern, _patternSettings));
+                    device.Patterns.Add(PatternFactory.GetPatternFromString(Pattern, PatternSettings));
                 }
 
             }

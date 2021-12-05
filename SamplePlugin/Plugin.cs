@@ -74,7 +74,7 @@ namespace AetherSenseRedux
                 }
                 catch (Exception)
                 {
-                    PluginLog.Error("Could not stop device {0}, device disconnected?", device.ClientDevice.Name);
+                    PluginLog.Error("Could not stop device {0}, device disconnected?", device.Name);
                 }
                 this.DevicePool.Remove(device);
             }
@@ -122,10 +122,7 @@ namespace AetherSenseRedux
             ChatMessage chatMessage = new ChatMessage(type, senderId, ref sender, ref message, ref isHandled);
             foreach (ChatTrigger t in ChatTriggerPool)
             {
-                if (t.Enabled)
-                {
-                    t.Queue(chatMessage);
-                }
+                t.Queue(chatMessage);
             }
         }
 
@@ -137,7 +134,8 @@ namespace AetherSenseRedux
 
             while (Configuration.Enabled)
             {
-                await Task.Delay(10);
+                // Nothing to do here but wait right now
+                await Task.Delay(100);
             }
         }
 

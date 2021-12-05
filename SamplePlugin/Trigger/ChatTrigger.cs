@@ -54,9 +54,16 @@ namespace AetherSenseRedux.Trigger
 
         private void OnTrigger()
         {
-            if ((_retriggerDelay > 0) && (DateTime.UtcNow > _retriggerTime))
+            if (_retriggerDelay > 0)
             {
-                _retriggerTime = DateTime.UtcNow + TimeSpan.FromMilliseconds(_retriggerDelay);
+                if (DateTime.UtcNow < _retriggerTime)
+                {
+                    return;
+                }
+                else
+                {
+                    _retriggerTime = DateTime.UtcNow + TimeSpan.FromMilliseconds(_retriggerDelay);
+                }
             }
             foreach (Device device in _devices)
             {

@@ -127,7 +127,8 @@ namespace AetherSenseRedux
 
         private void Restart()
         {
-
+            Stop();
+            Start();
         }
 
         private void Stop()

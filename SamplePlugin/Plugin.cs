@@ -112,6 +112,7 @@ namespace AetherSenseRedux
             }
         }
 
+        // Instead of constant async scanning, it may make sense to simply scan when a command is issued
         private void OnScanComplete(object? sender, EventArgs e)
         {
             Task.Run(DoScan);
@@ -126,6 +127,7 @@ namespace AetherSenseRedux
             }
         }
 
+        // This may be unnecessary and able to be replaced with OnEnable() and OnDisable() as all processing should occur in trigger and device threads
         private async Task MainLoop()
         {
             //register OnChatReceived handler

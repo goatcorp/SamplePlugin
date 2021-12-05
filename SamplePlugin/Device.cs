@@ -44,11 +44,13 @@ namespace AetherSenseRedux
         private async Task OnTick()
         {
             List<double> intensities = new List<double>();
+            DateTime t = DateTime.UtcNow;
+
             foreach (var pattern in Patterns)
             {
                 try
                 {
-                    intensities.Add(pattern.GetIntensityAtTime(DateTime.UtcNow));
+                    intensities.Add(pattern.GetIntensityAtTime(t));
                 }
                 catch (PatternExpiredException)
                 {

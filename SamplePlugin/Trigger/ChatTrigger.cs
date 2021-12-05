@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace AetherSenseRedux.Trigger
 {
@@ -21,7 +22,7 @@ namespace AetherSenseRedux.Trigger
 
         // ChatTrigger properties
         private readonly List<ChatMessage> _messages;
-        private readonly string _regex;
+        private readonly Regex _regex;
         private readonly long _retriggerDelay;
         private DateTime _retriggerTime;
 
@@ -37,7 +38,7 @@ namespace AetherSenseRedux.Trigger
 
             // ChatTrigger properties
             _messages = new List<ChatMessage>();
-            _regex = regex;
+            _regex = new Regex(@regex);
             _retriggerDelay = retriggerDelay;
             _retriggerTime = DateTime.MinValue;
 
@@ -83,7 +84,12 @@ namespace AetherSenseRedux.Trigger
                 {
                     foreach (ChatMessage message in _messages)
                     {
-                        //TODO: search for match and call OnTrigger() if matched
+                        
+                        if (_regex.IsMatch(message.ToString()))
+                        {
+                            OnTrigger();
+                        }
+
                         _messages.Remove(message);
                         await Task.Yield();
                     }

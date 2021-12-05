@@ -32,7 +32,7 @@ namespace AetherSenseRedux.Pattern
             {
                 throw new PatternExpiredException();
             }
-            long patternTime = (DateTime.UtcNow + TimeSpan.FromMilliseconds(offset)).Ticks / 10000;
+            long patternTime = DateTime.UtcNow.Ticks / 10000 + offset;
 
             long progress = patternTime % total_duration;
 

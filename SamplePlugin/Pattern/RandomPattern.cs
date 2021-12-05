@@ -10,10 +10,14 @@ namespace AetherSenseRedux.Pattern
     {
         public DateTime Expires { get; set; }
         private readonly Random rand = new Random();
+        private readonly double min;
+        private readonly double max;
 
         public RandomPattern(Dictionary<string, object> config)
         {
             Expires = DateTime.UtcNow + TimeSpan.FromMilliseconds((long)config["duration"]);
+            min = (double)config["min"];
+            max = (double)config["max"];
         }
 
         public double GetIntensityAtTime(DateTime time)
@@ -22,7 +26,11 @@ namespace AetherSenseRedux.Pattern
             {
                 throw new PatternExpiredException();
             }
-            return rand.NextDouble();
+            return Scale(rand.NextDouble(),min,max);
+        }
+        private static double Scale(double value, double min, double max)
+        {
+            return value * (max - min) + min;
         }
     }
 }

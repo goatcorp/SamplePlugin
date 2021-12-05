@@ -113,7 +113,7 @@ namespace AetherSenseRedux.Trigger
 
         public override string ToString()
         {
-            return string.Format("<{0}> {1}", Sender.TextValue, Message.TextValue);
+            return string.Format("{2}: <{0}> {1}", Sender.TextValue, Message.TextValue, ChatType.ToString());
         }
     }
 }

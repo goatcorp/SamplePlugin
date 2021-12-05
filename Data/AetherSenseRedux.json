@@ -1,0 +1,12 @@
+{
+  "Author": "Tama Gotchi",
+  "Name": "AetherSense Redux (18+)",
+  "Punchline": "Advanced haptics on the moon",
+  "Description": "An advanced haptic feedback plugin using the Buttplug.io library.",
+  "InternalName": "AetherSenseRedux",
+  "ApplicableVersion": "any",
+  "Tags": [
+    "buttplug",
+    "haptic"
+  ]
+}

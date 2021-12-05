@@ -18,6 +18,8 @@ namespace AetherSenseRedux.Pattern
                     return new RampPattern(settings);
                 case "Random":
                     return new RandomPattern(settings);
+                case "Square":
+                    return new SquarePattern(settings);
                 default:
                     throw new ArgumentException(String.Format("Invalid pattern {0} specified",name));
             }

@@ -52,6 +52,7 @@ namespace AetherSenseRedux
                 }
                 catch (PatternExpiredException)
                 {
+                    // possible issue here depending on how C# compares objects, if so adding a guid to each pattern instance would resolve it
                     Patterns.Remove(pattern);
                 }
             }
@@ -64,6 +65,7 @@ namespace AetherSenseRedux
 
         private async Task WriteAsync(double intensity)
         {
+            // clamp intensity before comparing to reduce unnecessary writes to device
             double clampedIntensity = Clamp(intensity, 0, 1);
 
             if (_lastIntensity == clampedIntensity)

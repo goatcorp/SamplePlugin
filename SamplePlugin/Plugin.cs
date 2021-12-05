@@ -121,12 +121,17 @@ namespace AetherSenseRedux
             Configuration.Enabled = true;
             //TODO: Read triggers from config and populate ChatTriggerPool et al
             //TODO: Start all triggers
+            foreach (ChatTrigger t in ChatTriggerPool)
+            {
+                Task.Run(() => t.Run());
+            }
             //TODO: register OnChatReceived handler
             //TODO: connect to buttplug and start scanning for devices
         }
 
         private void Restart()
         {
+            // while this works, a cleaner restart that doesn't drop the intiface connection may be in order
             Stop();
             Start();
         }

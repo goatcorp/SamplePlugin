@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace AetherSenseRedux.Trigger
 {
-    internal class ChatTrigger
+    internal class ChatTrigger : ITrigger
     {
         // ITrigger properties
         public bool Enabled { get; set; }
-        public string Name;
+        public string Name { get; init; }
         private readonly List<Device> Devices;
         private readonly List<string> EnabledDevices;
         private readonly string Pattern;

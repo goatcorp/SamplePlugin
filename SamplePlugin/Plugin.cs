@@ -66,18 +66,7 @@ namespace AetherSenseRedux
 
         public void Dispose()
         {
-            foreach (Device device in DevicePool)
-            {
-                try
-                {
-                    device.Stop();
-                }
-                catch (Exception)
-                {
-                    PluginLog.Error("Could not stop device {0}, device disconnected?", device.Name);
-                }
-                this.DevicePool.Remove(device);
-            }
+           Stop();
             PluginUi.Dispose();
             CommandManager.RemoveHandler(commandName);
         }
@@ -127,18 +116,34 @@ namespace AetherSenseRedux
             }
         }
 
-        // This may be unnecessary and able to be replaced with OnEnable() and OnDisable() as all processing should occur in trigger and device threads
-        private async Task MainLoop()
+        private void Start()
         {
-            //register OnChatReceived handler
+            Configuration.Enabled = true;
+            //TODO: Read triggers from config and populate ChatTriggerPool et al
+            //TODO: Start all triggers
+            //TODO: register OnChatReceived handler
+            //TODO: connect to buttplug and start scanning for devices
+        }
 
-            //attempt to connect
+        private void Restart()
+        {
 
-            while (Configuration.Enabled)
+        }
+
+        private void Stop()
+        {
+            foreach (ChatTrigger t in ChatTriggerPool)
             {
-                // Nothing to do here but wait right now
-                await Task.Delay(100);
+                t.Enabled = false;
             }
+            foreach (Device device in DevicePool)
+            {
+                device.Stop();
+            }
+            //TODO: disconnect from buttplug
+            Configuration.Enabled = false;
+            DevicePool.Clear();
+            ChatTriggerPool.Clear();
         }
 
         private async Task DoScan()

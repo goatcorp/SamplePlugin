@@ -7,7 +7,7 @@ namespace AetherSenseRedux.Pattern
     internal class ConstantPattern : IPattern
     {
         public DateTime Expires { get; set; }
-        private double level;
+        private readonly double level;
 
         public ConstantPattern(Dictionary<string, object> config)
         {

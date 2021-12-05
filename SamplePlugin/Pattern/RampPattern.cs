@@ -9,9 +9,9 @@ namespace AetherSenseRedux.Pattern
     internal class RampPattern : IPattern
     {
         public DateTime Expires { get; set; }
-        private double minLevel;
-        private double maxLevel;
-        private long duration;
+        private readonly double minLevel;
+        private readonly double maxLevel;
+        private readonly long duration;
 
 
         public RampPattern(Dictionary<string, object> config)

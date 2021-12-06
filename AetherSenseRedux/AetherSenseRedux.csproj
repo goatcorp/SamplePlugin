@@ -4,9 +4,9 @@
     <Authors></Authors>
     <Company></Company>
     <Version>0.0.0.1</Version>
-    <Description>A sample plugin.</Description>
+    <Description>Buttplugs on the moon</Description>
     <Copyright></Copyright>
-    <PackageProjectUrl>https://github.com/goatcorp/AetherSenseRedux</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/digital-pet/AetherSenseRedux</PackageProjectUrl>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -61,6 +61,15 @@
       <HintPath>$(DalamudLibPath)Lumina.Excel.dll</HintPath>
       <Private>false</Private>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Buttplug.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="buttplug_rs_ffi.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

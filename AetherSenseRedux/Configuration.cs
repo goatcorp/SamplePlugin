@@ -1,6 +1,7 @@
 ﻿using Dalamud.Configuration;
 using Dalamud.Plugin;
 using System;
+using System.Collections.Generic;
 
 namespace AetherSenseRedux
 {
@@ -11,8 +12,10 @@ namespace AetherSenseRedux
 
         public bool SomePropertyToBeSavedAndWithADefault { get; set; } = true;
 
-        public bool Enabled { get; set; } = true;
-        public string Address { get; set; } = string.Empty;
+        public bool Enabled { get; set; } = false;
+        public string Address { get; set; } = "ws://127.0.0.1:12345";
+
+        public List<string> SeenDevices { get; set; } = new();
 
         // the below exist just to make saving less cumbersome
 

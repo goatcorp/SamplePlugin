@@ -2,6 +2,7 @@
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Logging;
+using Dalamud.Game.Gui;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 
@@ -25,7 +26,9 @@ namespace AetherSenseRedux
         private DalamudPluginInterface PluginInterface { get; init; }
         private CommandManager CommandManager { get; init; }
         private Configuration Configuration { get; init; }
+        [PluginService] private ChatGui ChatGui { get; init; } = null!;
         private PluginUI PluginUi { get; init; }
+
 
         private readonly ButtplugClient Buttplug;
 
@@ -39,6 +42,8 @@ namespace AetherSenseRedux
         {
             PluginInterface = pluginInterface;
             CommandManager = commandManager;
+
+            PluginInterface.Inject(this);
 
             Buttplug = new ButtplugClient("AetherSense Redux");
             Buttplug.DeviceAdded += OnDeviceAdded;
@@ -77,6 +82,9 @@ namespace AetherSenseRedux
             PluginLog.Information("Device {0} added", e.Device.Name);
             Device newDevice = new Device(e.Device);
             this.DevicePool.Add(newDevice);
+            if (!Configuration.SeenDevices.Contains(newDevice.Name)){
+                Configuration.SeenDevices.Add(newDevice.Name);
+            }
             Task.Run(() => newDevice.Run());
 
         }
@@ -120,12 +128,13 @@ namespace AetherSenseRedux
         {
             Configuration.Enabled = true;
             //TODO: Read triggers from config and populate ChatTriggerPool et al
-            //TODO: Start all triggers
+            
+            //Start all triggers
             foreach (ChatTrigger t in ChatTriggerPool)
             {
                 Task.Run(() => t.Run());
             }
-            //TODO: register OnChatReceived handler
+            ChatGui.ChatMessage += OnChatReceived;
             //TODO: connect to buttplug and start scanning for devices
         }
 

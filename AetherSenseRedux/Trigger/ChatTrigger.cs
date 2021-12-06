@@ -31,14 +31,14 @@ namespace AetherSenseRedux.Trigger
             // ITrigger properties
             Enabled = true;
             Name = name;
+
+            // ChatTrigger properties
             Devices = devices;
             EnabledDevices = enabledDevices;
             Pattern = pattern;
             PatternSettings = patternSettings;
-
-            // ChatTrigger properties
             _messages = new List<ChatMessage>();
-            _regex = new Regex(@regex);
+            _regex = new Regex(regex);
             _retriggerDelay = retriggerDelay;
             _retriggerTime = DateTime.MinValue;
 

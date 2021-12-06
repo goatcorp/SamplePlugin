@@ -2,3 +2,5 @@
 obj/
 bin/
 *.user
+AetherSenseRedux/Buttplug.dll
+AetherSenseRedux/buttplug_rs_ffi.dll

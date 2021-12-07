@@ -32,7 +32,7 @@ namespace AetherSenseRedux
 
         private readonly ButtplugClient Buttplug;
 
-        private readonly List<Device> DevicePool;
+        private List<Device> DevicePool;
 
         private readonly List<ChatTrigger> ChatTriggerPool;
 
@@ -67,11 +67,13 @@ namespace AetherSenseRedux
 
             PluginInterface.UiBuilder.Draw += DrawUI;
             PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
+            //temporary
+            ChatGui.ChatMessage += OnChatReceived;
         }
 
         public void Dispose()
         {
-           Stop();
+            Stop();
             PluginUi.Dispose();
             CommandManager.RemoveHandler(commandName);
         }
@@ -122,43 +124,87 @@ namespace AetherSenseRedux
             {
                 t.Queue(chatMessage);
             }
+            PluginLog.Debug(chatMessage.ToString());
+        }
+        private void InitButtplug()
+        {
+            //TODO: connect to buttplug and start scanning for devices
         }
 
-        private void Start()
+        private void DestroyButtplug()
         {
-            Configuration.Enabled = true;
-            //TODO: Read triggers from config and populate ChatTriggerPool et al
-            
-            //Start all triggers
+            foreach (Device device in DevicePool)
+            {
+                device.Stop();
+            }
+            DevicePool.Clear();
+            //TODO: disconnect from buttplug
+        }
+        private void InitTriggers()
+        {
+            foreach (var d in Configuration.Triggers)
+            {
+                switch (d["type"])
+                {
+                    case "Chat":
+                        ChatTriggerPool.Add(
+                            new ChatTrigger(
+                                d["name"], 
+                                ref DevicePool, 
+                                d["enabledDevices"],
+                                d["pattern"], 
+                                d["patternSettings"],
+                                d["regex"],
+                                d["retriggerDelay"]
+                            )
+                        );
+                        break;
+                    default:
+                        break;
+                }
+            }
+
             foreach (ChatTrigger t in ChatTriggerPool)
             {
                 Task.Run(() => t.Run());
             }
+
             ChatGui.ChatMessage += OnChatReceived;
-            //TODO: connect to buttplug and start scanning for devices
         }
-
-        private void Restart()
-        {
-            // while this works, a cleaner restart that doesn't drop the intiface connection may be in order
-            Stop();
-            Start();
-        }
-
-        private void Stop()
+        private void DestroyTriggers()
         {
             foreach (ChatTrigger t in ChatTriggerPool)
             {
                 t.Enabled = false;
             }
-            foreach (Device device in DevicePool)
-            {
-                device.Stop();
-            }
-            //TODO: disconnect from buttplug
-            Configuration.Enabled = false;
-            DevicePool.Clear();
+            ChatGui.ChatMessage -= OnChatReceived;
             ChatTriggerPool.Clear();
+        }
+        private void Start()
+        {
+            //Configuration.Enabled = true;            
+            InitTriggers();
+            InitButtplug();
+        }
+
+        private void Restart()
+        {
+            DestroyTriggers();
+
+            // while this works, a cleaner restart that doesn't drop the intiface connection may be in order
+            //Stop();
+            //Start();
+
+            InitTriggers();
+        }
+
+        private void Stop()
+        {
+            DestroyTriggers();
+            DestroyButtplug();
+            //Configuration.Enabled = false;
+
+
         }
 
         private async Task DoScan()

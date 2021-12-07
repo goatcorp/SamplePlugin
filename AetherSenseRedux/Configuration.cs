@@ -21,10 +21,11 @@ namespace AetherSenseRedux
         { 
             new Dictionary<string, dynamic> 
             {
+                {"type", "Chat" },
                 { "name", "Cast" },
                 { "enabledDevices", new List<string>()},
                 { "pattern", "Constant" },
-                { "patternSettings", new Dictionary<string, object> 
+                { "patternSettings", new Dictionary<string, dynamic> 
                     {
                         {"level", 1 },
                         {"duration", 250 }
@@ -35,10 +36,11 @@ namespace AetherSenseRedux
             },
             new Dictionary<string, dynamic>
             {
+                {"type", "Chat" },
                 { "name", "Casting" },
                 { "enabledDevices", new List<string>()},
                 { "pattern", "Ramp" },
-                { "patternSettings", new Dictionary<string, object>
+                { "patternSettings", new Dictionary<string, dynamic>
                     {
                         {"start", 0 },
                         {"end", 0.75 },

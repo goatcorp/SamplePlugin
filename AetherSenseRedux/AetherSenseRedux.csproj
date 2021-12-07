@@ -22,9 +22,16 @@
 
   <ItemGroup>
     <Content Include="..\Data\AetherSenseRedux.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
+	<Target Name="CopyCustomContent" AfterTargets="AfterBuild">
+		<Copy SourceFiles="$(userprofile)\.nuget\packages\buttplug\2.0.5\lib\netstandard2.0\Buttplug.dll" DestinationFolder="$(OutDir)" />
+		<Copy SourceFiles="$(userprofile)\.nuget\packages\buttplugrustffi\2.0.4\runtimes\win-x64\native\buttplug_rs_ffi.dll" DestinationFolder="$(OutDir)" />
+		<Copy SourceFiles="$(userprofile)\.nuget\packages\buttplugrustffi\2.0.4\runtimes\win-x64\native\buttplug_rs_ffi.dll.lib" DestinationFolder="$(OutDir)" />
+		<Copy SourceFiles="$(userprofile)\.nuget\packages\google.protobuf\3.17.3\lib\net5.0\Google.Protobuf.dll" DestinationFolder="$(OutDir)" />
+	</Target>
 
   <PropertyGroup>
     <DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
@@ -32,7 +39,7 @@
 
   <ItemGroup>
     <PackageReference Include="Buttplug" Version="2.0.5" />
-    <PackageReference Include="DalamudPackager" Version="2.1.2" />
+    <PackageReference Include="DalamudPackager" Version="2.1.5" />
     <Reference Include="FFXIVClientStructs">
       <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
       <Private>false</Private>
@@ -61,15 +68,6 @@
       <HintPath>$(DalamudLibPath)Lumina.Excel.dll</HintPath>
       <Private>false</Private>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Buttplug.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="buttplug_rs_ffi.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

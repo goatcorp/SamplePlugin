@@ -16,7 +16,7 @@ namespace AetherSenseRedux.Pattern
         private readonly long total_duration;
 
 
-        public SquarePattern(Dictionary<string, object> config)
+        public SquarePattern(Dictionary<string, dynamic> config)
         {
             level1 = (double)config["level1"];
             level2 = (double)config["level2"];
@@ -37,6 +37,18 @@ namespace AetherSenseRedux.Pattern
             long progress = patternTime % total_duration;
 
             return (progress < duration1)? level1 : level2;
+        }
+        public static Dictionary<string, dynamic> GetDefaultConfiguration()
+        {
+            return new Dictionary<string, dynamic>
+            {
+                {"level1", 0 },
+                {"level2", 1 },
+                {"duration1", 250 },
+                {"duration2", 250 },
+                {"offset", 0 },
+                {"duration", 1000 }
+            };
         }
     }
 }

@@ -12,5 +12,10 @@ namespace AetherSenseRedux.Pattern
         DateTime Expires { get; set; }
         double GetIntensityAtTime(DateTime currTime);
 
+        static Dictionary<string, dynamic> GetDefaultConfiguration()
+        {
+            return new Dictionary<string, dynamic>();
+        }
+
     }
 }

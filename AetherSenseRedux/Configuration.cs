@@ -17,6 +17,39 @@ namespace AetherSenseRedux
 
         public List<string> SeenDevices { get; set; } = new();
 
+        public List<Dictionary<string, dynamic>> Triggers { get; set; } = new List<Dictionary<string, dynamic>> 
+        { 
+            new Dictionary<string, dynamic> 
+            {
+                { "name", "Cast" },
+                { "enabledDevices", new List<string>()},
+                { "pattern", "Constant" },
+                { "patternSettings", new Dictionary<string, object> 
+                    {
+                        {"level", 1 },
+                        {"duration", 250 }
+                    }
+                },
+                { "regex", "You cast" },
+                { "retriggerDelay", 0 }
+            },
+            new Dictionary<string, dynamic>
+            {
+                { "name", "Casting" },
+                { "enabledDevices", new List<string>()},
+                { "pattern", "Ramp" },
+                { "patternSettings", new Dictionary<string, object>
+                    {
+                        {"start", 0 },
+                        {"end", 0.75 },
+                        {"duration", 2500 }
+                    }
+                },
+                { "regex", "You begin casting" },
+                { "retriggerDelay", 250 }
+            }
+        };
+
         // the below exist just to make saving less cumbersome
 
         [NonSerialized]

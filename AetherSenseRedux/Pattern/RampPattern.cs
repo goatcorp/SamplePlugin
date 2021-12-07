@@ -14,7 +14,7 @@ namespace AetherSenseRedux.Pattern
         private readonly long duration;
 
 
-        public RampPattern(Dictionary<string, object> config)
+        public RampPattern(Dictionary<string, dynamic> config)
         {
             startLevel = (double)config["start"];
             endLevel = (double)config["end"];
@@ -30,6 +30,16 @@ namespace AetherSenseRedux.Pattern
             }
             double progress = (Expires.Ticks - time.Ticks) / TimeSpan.FromMilliseconds(duration).Ticks;
             return (endLevel - startLevel) * progress + startLevel;
+        }
+
+        public static Dictionary<string, dynamic> GetDefaultConfiguration()
+        {
+            return new Dictionary<string, dynamic>
+            {
+                {"start", 0 },
+                {"end", 1 },
+                {"duration", 1000 }
+            };
         }
     }
 }

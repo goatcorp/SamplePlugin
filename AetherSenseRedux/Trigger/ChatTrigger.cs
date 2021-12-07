@@ -18,7 +18,7 @@ namespace AetherSenseRedux.Trigger
         private readonly List<Device> Devices;
         private readonly List<string> EnabledDevices;
         private readonly string Pattern;
-        private readonly Dictionary<string, object> PatternSettings;
+        private readonly Dictionary<string, dynamic> PatternSettings;
 
         // ChatTrigger properties
         private readonly List<ChatMessage> _messages;
@@ -26,7 +26,7 @@ namespace AetherSenseRedux.Trigger
         private readonly long _retriggerDelay;
         private DateTime _retriggerTime;
 
-        public ChatTrigger(string name, ref List<Device> devices, List<string> enabledDevices, string pattern, Dictionary<string,object> patternSettings, string regex, long retriggerDelay)
+        public ChatTrigger(string name, ref List<Device> devices, List<string> enabledDevices, string pattern, Dictionary<string, dynamic> patternSettings, string regex, long retriggerDelay)
         {
             // ITrigger properties
             Enabled = true;

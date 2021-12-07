@@ -9,7 +9,7 @@ namespace AetherSenseRedux.Pattern
         public DateTime Expires { get; set; }
         private readonly double level;
 
-        public ConstantPattern(Dictionary<string, object> config)
+        public ConstantPattern(Dictionary<string, dynamic> config)
         {
             level = (double)config["level"];
             Expires = DateTime.UtcNow + TimeSpan.FromMilliseconds((long)config["duration"]);
@@ -22,6 +22,14 @@ namespace AetherSenseRedux.Pattern
                 throw new PatternExpiredException();
             }
             return level;
+        }
+        public static Dictionary<string, dynamic> GetDefaultConfiguration()
+        {
+            return new Dictionary<string, dynamic>
+            {
+                {"level", 1 },
+                {"duration", 1000 }
+            };
         }
     }
 }

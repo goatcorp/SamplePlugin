@@ -13,5 +13,10 @@ namespace AetherSenseRedux.Trigger
         string Type { get; }
 
         Task Run();
+
+        static Dictionary<string, dynamic> GetDefaultConfiguration()
+        {
+            return new Dictionary<string, dynamic>();
+        }
     }
 }

@@ -98,6 +98,19 @@ namespace AetherSenseRedux.Trigger
                 await Task.Delay(10);
             }
         }
+        static Dictionary<string, dynamic> GetDefaultConfiguration()
+        {
+            return new Dictionary<string, dynamic>
+            {
+                {"type", "Chat" },
+                { "name", "New Chat Trigger" },
+                { "enabledDevices", new List<string>()},
+                { "pattern", "Constant" },
+                { "patternSettings", PatternFactory.GetDefaultsFromString("Constant") },
+                { "regex", "" },
+                { "retriggerDelay", 0 }
+            };
+        }
     }
 
     struct ChatMessage

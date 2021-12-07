@@ -12,6 +12,8 @@ namespace AetherSenseRedux
 
         public bool SomePropertyToBeSavedAndWithADefault { get; set; } = true;
 
+        public bool LogChat { get; set; } = false;
+
         public bool Enabled { get; set; } = false;
         public string Address { get; set; } = "ws://127.0.0.1:12345";
 

@@ -77,6 +77,16 @@ namespace AetherSenseRedux.Trigger
             }
         }
 
+        public void Start()
+        {
+            Task.Run(() => Run());
+        }
+
+        public void Stop()
+        {
+            Enabled = false;
+        }
+
         public async Task Run()
         {
             while (Enabled)

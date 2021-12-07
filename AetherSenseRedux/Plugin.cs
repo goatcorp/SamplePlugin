@@ -124,7 +124,10 @@ namespace AetherSenseRedux
             {
                 t.Queue(chatMessage);
             }
-            PluginLog.Debug(chatMessage.ToString());
+            if (Configuration.LogChat)
+            {
+                PluginLog.Debug(chatMessage.ToString());
+            }
         }
         private void InitButtplug()
         {
@@ -156,7 +159,7 @@ namespace AetherSenseRedux
 
             foreach (ChatTrigger t in ChatTriggerPool)
             {
-                Task.Run(() => t.Run());
+                t.Start();
             }
 
             ChatGui.ChatMessage += OnChatReceived;
@@ -165,7 +168,7 @@ namespace AetherSenseRedux
         {
             foreach (ChatTrigger t in ChatTriggerPool)
             {
-                t.Enabled = false;
+                t.Stop();
             }
             ChatGui.ChatMessage -= OnChatReceived;
             ChatTriggerPool.Clear();

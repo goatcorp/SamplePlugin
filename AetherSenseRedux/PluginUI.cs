@@ -83,15 +83,15 @@ namespace AetherSenseRedux
                 return;
             }
 
-            ImGui.SetNextWindowSize(new Vector2(232, 75), ImGuiCond.Always);
+            ImGui.SetNextWindowSize(new Vector2(640, 400), ImGuiCond.Always);
             if (ImGui.Begin("A Wonderful Configuration Window", ref settingsVisible,
                 ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse))
             {
                 // can't ref a property, so use a local copy
-                var configValue = configuration.SomePropertyToBeSavedAndWithADefault;
+                var configValue = configuration.LogChat;
                 if (ImGui.Checkbox("Random Config Bool", ref configValue))
                 {
-                    configuration.SomePropertyToBeSavedAndWithADefault = configValue;
+                    configuration.LogChat = configValue;
                     // can save immediately on change, if you don't want to provide a "Save and Close" button
                     configuration.Save();
                 }

@@ -14,6 +14,7 @@ namespace AetherSenseRedux.Trigger
     {
         // ITrigger properties
         public bool Enabled { get; set; }
+        public string Type { get; } = "ChatTrigger";
         public string Name { get; init; }
         private readonly List<Device> Devices;
         private readonly List<string> EnabledDevices;

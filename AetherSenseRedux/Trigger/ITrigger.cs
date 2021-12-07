@@ -10,6 +10,7 @@ namespace AetherSenseRedux.Trigger
     {
         bool Enabled { get; set; }
         string Name { get; init; }
+        string Type { get; }
 
         Task Run();
     }

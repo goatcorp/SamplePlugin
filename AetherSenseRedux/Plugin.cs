@@ -144,23 +144,13 @@ namespace AetherSenseRedux
         {
             foreach (var d in Configuration.Triggers)
             {
-                switch (d["type"])
+                var Trigger = TriggerFactory.GetTriggerFromConfig(d, ref DevicePool);
+                if (Trigger.Type == "ChatTrigger")
                 {
-                    case "Chat":
-                        ChatTriggerPool.Add(
-                            new ChatTrigger(
-                                d["name"], 
-                                ref DevicePool, 
-                                d["enabledDevices"],
-                                d["pattern"], 
-                                d["patternSettings"],
-                                d["regex"],
-                                d["retriggerDelay"]
-                            )
-                        );
-                        break;
-                    default:
-                        break;
+                    ChatTriggerPool.Add((ChatTrigger)Trigger);
+                } else
+                {
+                    PluginLog.Error("Invalid trigger type {0} created.", Trigger.Type);
                 }
             }
 

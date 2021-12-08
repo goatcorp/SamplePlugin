@@ -19,5 +19,24 @@ namespace AetherSenseRedux.Trigger
                     throw new ArgumentException(String.Format("Invalid trigger {0} specified", config.Type));
             }
         }
+
+        public static TriggerConfig GetTriggerConfigFromObject(dynamic o)
+        {
+            switch ((string)o.Type)
+            {
+                case "Chat":
+                    return new ChatTriggerConfig()
+                    {
+                        Name = (string)o.Name,
+                        Regex = (string)o.Regex,
+                        RetriggerDelay = (long)o.RetriggerDelay,
+                        EnabledDevices = (List<string>)o.EnabledDevices,
+                        Pattern = (string)o.Pattern,
+                        PatternSettings = (dynamic)o.PatternSettings
+                    };
+                default:
+                    throw new ArgumentException(String.Format("Invalid trigger {0} specified", o.Type));
+            }
+        }
     }
 }

@@ -62,7 +62,7 @@ namespace AetherSenseRedux
             ImGui.SetNextWindowSizeConstraints(new Vector2(375, 330), new Vector2(float.MaxValue, float.MaxValue));
             if (ImGui.Begin("My Amazing Window", ref visible, ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse))
             {
-                ImGui.Text($"The random config bool is {configuration.SomePropertyToBeSavedAndWithADefault}");
+                ImGui.Text($"The random config bool is {configuration.LogChat}");
 
                 if (ImGui.Button("Start"))
                 {

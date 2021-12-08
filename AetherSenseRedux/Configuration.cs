@@ -12,8 +12,6 @@ namespace AetherSenseRedux
     {
         public int Version { get; set; } = 0;
 
-        public bool SomePropertyToBeSavedAndWithADefault { get; set; } = true;
-
         public bool LogChat { get; set; } = false;
 
         public bool Enabled { get; set; } = false;
@@ -31,7 +29,7 @@ namespace AetherSenseRedux
                 PatternSettings = new ConstantPatternConfig()
                 {
                     Level = 1,
-                    Duration = 1000
+                    Duration = 200
                 },
                 Regex = "You cast",
                 RetriggerDelay = 0

@@ -21,7 +21,7 @@ namespace AetherSenseRedux
 
         public List<string> SeenDevices { get; set; } = new();
 
-        public List<TriggerConfig> Triggers { get; set; } = new List<TriggerConfig>
+        public List<ChatTriggerConfig> Triggers { get; set; } = new List<ChatTriggerConfig>
         {
             new ChatTriggerConfig()
             {
@@ -37,6 +37,7 @@ namespace AetherSenseRedux
                 RetriggerDelay = 0
             },
             new ChatTriggerConfig(){
+
                 Name = "Casting",
                 EnabledDevices = new List<string>(),
                 Pattern = "Ramp",

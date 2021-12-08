@@ -31,6 +31,16 @@ namespace AetherSenseRedux
             this.pluginInterface = pluginInterface;
         }
 
+        public void FixDeserialization()
+        {
+            foreach (TriggerConfig t in Triggers)
+            {
+                var patternsettings = PatternFactory.GetPatternConfigFromObject(t.PatternSettings);
+                t.PatternSettings = patternsettings;
+
+            }
+        }
+
         public void LoadDefaults()
         {
             Triggers = new List<ChatTriggerConfig>() {

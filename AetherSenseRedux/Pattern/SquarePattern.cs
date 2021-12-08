@@ -46,6 +46,7 @@ namespace AetherSenseRedux.Pattern
     [Serializable]
     public class SquarePatternConfig : PatternConfig
     {
+        public override string Type { get; } = "Square";
         public double Level1 { get; set; } = 0;
         public double Level2 { get; set; } = 1;
         public long Duration1 { get; set; } = 200;

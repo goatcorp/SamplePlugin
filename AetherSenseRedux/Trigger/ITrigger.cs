@@ -13,7 +13,7 @@ namespace AetherSenseRedux.Trigger
         string Name { get; init; }
         string Type { get; }
 
-        Task Run();
+        Task MainLoop();
 
         static Dictionary<string, dynamic> GetDefaultConfiguration()
         {
@@ -25,8 +25,8 @@ namespace AetherSenseRedux.Trigger
     {
         public abstract string Type { get; }
         public abstract string Name { get; set; }
-        public List<string> EnabledDevices = new List<string>();
-        public string Pattern = "Constant";
-        public PatternConfig PatternSettings = new ConstantPatternConfig();
+        public List<string> EnabledDevices { get; set; } = new List<string>();
+        public string Pattern { get; set; } = "";
+        public dynamic PatternSettings { get; set; } = null!;
     }
 }

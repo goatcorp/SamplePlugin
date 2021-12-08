@@ -41,6 +41,7 @@ namespace AetherSenseRedux.Pattern
     [Serializable]
     public class RandomPatternConfig : PatternConfig
     {
+        public override string Type { get; } = "Random";
         public double Minimum { get; set; } = 0;
         public double Maximum { get; set; } = 1;
     }

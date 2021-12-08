@@ -21,6 +21,7 @@ namespace AetherSenseRedux.Pattern
     [Serializable]
     public abstract class PatternConfig
     {
+        public abstract string Type { get; }
         public long Duration { get; set; } = 1000;
     }
 }

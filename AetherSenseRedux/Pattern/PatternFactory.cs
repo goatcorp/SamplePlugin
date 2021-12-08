@@ -41,5 +41,44 @@ namespace AetherSenseRedux.Pattern
                     throw new ArgumentException(String.Format("Invalid pattern {0} specified", name));
             }
         }
+
+        public static PatternConfig GetPatternConfigFromObject(dynamic o)
+        {
+            switch ((string)o.Type)
+            {
+                case "Constant":
+                    return new ConstantPatternConfig()
+                    {
+                        Duration = (long)o.Duration,
+                        Level = (double)o.Level
+                    };
+                case "Ramp":
+                    return new RampPatternConfig()
+                    {
+                        Duration = (long)o.Duration,
+                        Start = (double)o.Start,
+                        End = (double)o.End
+                    };
+                case "Random":
+                    return new RandomPatternConfig()
+                    {
+                        Duration = (long)o.Duration,
+                        Minimum = (double)o.Minimum,
+                        Maximum = (double)o.Maximum
+                    };
+                case "Square":
+                    return new SquarePatternConfig()
+                    {
+                        Duration = (long)o.Duration,
+                        Duration1 = (long)o.Duration1,
+                        Duration2 = (long)o.Duration2,
+                        Level1 = (double)o.Level1,
+                        Level2 = (double)o.Level2,
+                        Offset = (long)o.Offset
+                    };
+                default:
+                    throw new ArgumentException(String.Format("Invalid pattern {0} specified", o.Type));
+            }
+        }
     }
 }

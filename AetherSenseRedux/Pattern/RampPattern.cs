@@ -40,6 +40,7 @@ namespace AetherSenseRedux.Pattern
     [Serializable]
     public class RampPatternConfig : PatternConfig
     {
+        public override string Type { get; } = "Ramp";
         public double Start { get; set; } = 0;
         public double End { get; set; } = 1;
     }

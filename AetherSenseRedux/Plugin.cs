@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 
 using Buttplug;
 using AetherSenseRedux.Trigger;
+using System.Collections.Concurrent;
 
 namespace AetherSenseRedux
 {
@@ -55,6 +56,7 @@ namespace AetherSenseRedux
 
             Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             Configuration.Initialize(PluginInterface);
+            Configuration.FixDeserialization();
 
             // you might normally want to embed resources and load them from the manifest stream
             var assemblyLocation = Assembly.GetExecutingAssembly().Location;
@@ -85,34 +87,46 @@ namespace AetherSenseRedux
             if (!Configuration.SeenDevices.Contains(newDevice.Name)){
                 Configuration.SeenDevices.Add(newDevice.Name);
             }
-            Task.Run(() => newDevice.Run());
+            Task.Run(newDevice.Run).ConfigureAwait(false);
 
         }
 
         private void OnDeviceRemoved(object? sender, DeviceRemovedEventArgs e)
         {
             PluginLog.Information("Device {0} removed", e.Device.Name);
-            foreach (Device device in this.DevicePool)
+            var toRemove = new List<Device>();
+            lock (this.DevicePool)
             {
-                if (device.ClientDevice == e.Device)
+                foreach (Device device in this.DevicePool)
                 {
-                    try
+                    if (device.ClientDevice == e.Device)
                     {
-                        device.Stop();
+                        try
+                        {
+                            device.Stop();
+                        }
+                        catch (Exception ex)
+                        {
+                            PluginLog.Error(ex, "Could not stop device {0}, device disconnected?", device.Name);
+                        }
+                        toRemove.Add(device);
                     }
-                    catch (Exception ex)
-                    {
-                        PluginLog.Error(ex, "Could not stop device {0}, device disconnected?", device.Name);
-                    }
-                    this.DevicePool.Remove(device);
                 }
             }
+                foreach (Device device in toRemove)
+                {
+                    lock (this.DevicePool)
+                    {
+                        this.DevicePool.Remove(device);
+                    }
+                    
+                }
         }
 
         // Instead of constant async scanning, it may make sense to simply scan when a command is issued
         private void OnScanComplete(object? sender, EventArgs e)
         {
-            Task.Run(DoScan);
+            Task.Run(DoScan).ConfigureAwait(false);
         }
 
         private void OnChatReceived(XivChatType type, uint senderId, ref SeString sender, ref SeString message, ref bool isHandled)
@@ -130,18 +144,45 @@ namespace AetherSenseRedux
         private void InitButtplug()
         {
             //TODO: connect to buttplug and start scanning for devices
+            if (!Buttplug.Connected)
+            {
+                try
+                {
+                    ButtplugWebsocketConnectorOptions wsOptions = new ButtplugWebsocketConnectorOptions(new Uri(Configuration.Address));
+                    var t = Buttplug.ConnectAsync(wsOptions);
+                    t.Wait();
+                }
+                catch (Exception ex)
+                {
+                    PluginLog.Error(ex, "Buttplug failed to connect");
+                }
+            }
+            if (Buttplug.Connected)
+            {
+                Task.Run(DoScan).ConfigureAwait(false);
+            }
             PluginLog.Debug("Buttplug created.");
         }
 
         private void DestroyButtplug()
         {
-            foreach (Device device in DevicePool)
+            lock (DevicePool)
             {
-                PluginLog.Debug("Stopping device {0}",device.Name);
-                device.Stop();
+                foreach (Device device in DevicePool)
+                {
+                    PluginLog.Debug("Stopping device {0}", device.Name);
+                    device.Stop();
+                }
+                DevicePool.Clear();
             }
-            DevicePool.Clear();
-            //TODO: disconnect from buttplug
+            try {
+                var t = Buttplug.DisconnectAsync();
+                t.Wait(); 
+            }
+            catch (Exception ex)
+            {
+                PluginLog.Error(ex, "Buttplug failed to connect");
+            }
             PluginLog.Debug("Buttplug destroyed.");
         }
         private void InitTriggers()

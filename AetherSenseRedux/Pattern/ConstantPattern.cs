@@ -31,6 +31,7 @@ namespace AetherSenseRedux.Pattern
     [Serializable]
     public class ConstantPatternConfig : PatternConfig
     {
+        public override string Type { get; } = "Constant";
         public double Level { get; set; } = 1;
     }
 }

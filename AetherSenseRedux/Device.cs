@@ -45,20 +45,29 @@ namespace AetherSenseRedux
         {
             List<double> intensities = new List<double>();
             DateTime t = DateTime.UtcNow;
+            var patternsToRemove = new List<IPattern>();
 
-            foreach (var pattern in Patterns)
+            lock (Patterns)
             {
-                try
+                foreach (var pattern in Patterns)
                 {
-                    intensities.Add(pattern.GetIntensityAtTime(t));
+                    try
+                    {
+                        intensities.Add(pattern.GetIntensityAtTime(t));
+                    }
+                    catch (PatternExpiredException)
+                    {
+                        patternsToRemove.Add(pattern);
+                    }
                 }
-                catch (PatternExpiredException)
+            }
+            foreach (var pattern in patternsToRemove)
+            {
+                lock (Patterns)
                 {
-                    // possible issue here depending on how C# compares objects, if so adding a guid to each pattern instance would resolve it
                     Patterns.Remove(pattern);
                 }
             }
-
             //TODO: Allow different merge modes besides average
             double intensity = (intensities.Any()) ? intensities.Average() : 0;
 

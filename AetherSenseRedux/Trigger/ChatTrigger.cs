@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using Dalamud.Logging;
+using System.Collections.Concurrent;
 
 namespace AetherSenseRedux.Trigger
 {
@@ -23,7 +24,7 @@ namespace AetherSenseRedux.Trigger
         public PatternConfig PatternSettings { get; init; }
 
         // ChatTrigger properties
-        private Queue<ChatMessage> _messages;
+        private ConcurrentQueue<ChatMessage> _messages;
         public Regex Regex { get; init; }
         public long RetriggerDelay { get; init; }
         private DateTime RetriggerTime { get; set; }
@@ -38,12 +39,12 @@ namespace AetherSenseRedux.Trigger
             Devices = devices;
             EnabledDevices = configuration.EnabledDevices;
             Pattern = configuration.Pattern;
-            PatternSettings = configuration.PatternSettings;
+            PatternSettings = PatternFactory.GetPatternConfigFromObject(configuration.PatternSettings);
             Regex = new Regex(configuration.Regex);
             RetriggerDelay = configuration.RetriggerDelay;
 
             // ChatTrigger properties
-            _messages = new Queue<ChatMessage>();
+            _messages = new ConcurrentQueue<ChatMessage>();
             RetriggerTime = DateTime.MinValue;
             Guid = Guid.NewGuid();
 
@@ -73,19 +74,25 @@ namespace AetherSenseRedux.Trigger
                     RetriggerTime = DateTime.UtcNow + TimeSpan.FromMilliseconds(RetriggerDelay);
                 }
             }
-            foreach (Device device in Devices)
+            lock (Devices)
             {
-                if (EnabledDevices.Contains(device.Name))
+                foreach (Device device in Devices)
                 {
-                    device.Patterns.Add(PatternFactory.GetPatternFromString(Pattern, PatternSettings));
-                }
+                    if (EnabledDevices.Contains(device.Name))
+                    {
+                        lock (device.Patterns)
+                        {
+                            device.Patterns.Add(PatternFactory.GetPatternFromString(Pattern, PatternSettings));
+                        }
+                    }
 
+                }
             }
         }
 
         public void Start()
         {
-            Task.Run(() => Run());
+            Task.Run(MainLoop).ConfigureAwait(false); ;
         }
 
         public void Stop()
@@ -93,7 +100,7 @@ namespace AetherSenseRedux.Trigger
             Enabled = false;
         }
 
-        public async Task Run()
+        public async Task MainLoop()
         {
             while (Enabled)
             {

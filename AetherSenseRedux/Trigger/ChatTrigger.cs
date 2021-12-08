@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using Dalamud.Logging;
 
 namespace AetherSenseRedux.Trigger
 {
@@ -22,10 +23,12 @@ namespace AetherSenseRedux.Trigger
         public PatternConfig PatternSettings { get; init; }
 
         // ChatTrigger properties
-        private List<ChatMessage> _messages;
+        private Queue<ChatMessage> _messages;
         public Regex Regex { get; init; }
         public long RetriggerDelay { get; init; }
         private DateTime RetriggerTime { get; set; }
+        private object queueLock = new object();
+        private Guid Guid { get; set; }
 
         public ChatTrigger(ChatTriggerConfig configuration, ref List<Device> devices)
         {
@@ -40,8 +43,9 @@ namespace AetherSenseRedux.Trigger
             RetriggerDelay = configuration.RetriggerDelay;
 
             // ChatTrigger properties
-            _messages = new List<ChatMessage>();
+            _messages = new Queue<ChatMessage>();
             RetriggerTime = DateTime.MinValue;
+            Guid = Guid.NewGuid();
 
         }
 
@@ -50,7 +54,8 @@ namespace AetherSenseRedux.Trigger
         {
             if (Enabled)
             {
-                _messages.Add(message);
+                 PluginLog.Verbose("{0} ({1}): Received message to queue",Name, Guid.ToString());
+                 _messages.Enqueue(message);
             }
         }
 
@@ -60,6 +65,7 @@ namespace AetherSenseRedux.Trigger
             {
                 if (DateTime.UtcNow < RetriggerTime)
                 {
+                    PluginLog.Debug("Trigger discarded, too soon");
                     return;
                 }
                 else
@@ -91,21 +97,20 @@ namespace AetherSenseRedux.Trigger
         {
             while (Enabled)
             {
-                if (_messages.Count > 0)
+                ChatMessage message;
+                if (_messages.TryDequeue(out message))
                 {
-                    foreach (ChatMessage message in _messages)
+                    PluginLog.Verbose("{1}: Processing message: {0}", message.ToString(), Guid.ToString());
+                    if (Regex.IsMatch(message.ToString()))
                     {
-                        
-                        if (Regex.IsMatch(message.ToString()))
-                        {
-                            OnTrigger();
-                        }
-
-                        _messages.Remove(message);
-                        await Task.Yield();
+                        OnTrigger();
+                        PluginLog.Debug("{1}: Triggered on message: {0}", message.ToString(), Guid.ToString());
                     }
+                    await Task.Yield();
+                } else
+                {
+                    await Task.Delay(50);
                 }
-                await Task.Delay(10);
             }
         }
         static TriggerConfig GetDefaultConfiguration()

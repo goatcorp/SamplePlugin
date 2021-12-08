@@ -21,7 +21,7 @@ namespace AetherSenseRedux
     {
         public string Name => "AetherSense Redux";
 
-        private const string commandName = "/as";
+        private const string commandName = "/asr";
 
         private DalamudPluginInterface PluginInterface { get; init; }
         private CommandManager CommandManager { get; init; }
@@ -67,8 +67,6 @@ namespace AetherSenseRedux
 
             PluginInterface.UiBuilder.Draw += DrawUI;
             PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
-            //temporary
-            ChatGui.ChatMessage += OnChatReceived;
         }
 
         public void Dispose()
@@ -102,9 +100,9 @@ namespace AetherSenseRedux
                     {
                         device.Stop();
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        PluginLog.Error("Could not stop device {0}, device disconnected?", device.Name);
+                        PluginLog.Error(ex, "Could not stop device {0}, device disconnected?", device.Name);
                     }
                     this.DevicePool.Remove(device);
                 }
@@ -132,16 +130,19 @@ namespace AetherSenseRedux
         private void InitButtplug()
         {
             //TODO: connect to buttplug and start scanning for devices
+            PluginLog.Debug("Buttplug created.");
         }
 
         private void DestroyButtplug()
         {
             foreach (Device device in DevicePool)
             {
+                PluginLog.Debug("Stopping device {0}",device.Name);
                 device.Stop();
             }
             DevicePool.Clear();
             //TODO: disconnect from buttplug
+            PluginLog.Debug("Buttplug destroyed.");
         }
         private void InitTriggers()
         {
@@ -159,19 +160,23 @@ namespace AetherSenseRedux
 
             foreach (ChatTrigger t in ChatTriggerPool)
             {
+                PluginLog.Debug("Starting chat trigger {0}",t.Name);
                 t.Start();
             }
 
             ChatGui.ChatMessage += OnChatReceived;
+            PluginLog.Debug("Triggers created");
         }
         private void DestroyTriggers()
         {
             foreach (ChatTrigger t in ChatTriggerPool)
             {
+                PluginLog.Debug("Stopping chat trigger {0}",t.Name);
                 t.Stop();
             }
             ChatGui.ChatMessage -= OnChatReceived;
             ChatTriggerPool.Clear();
+            PluginLog.Debug("Triggers destroyed.");
         }
         public void Start()
         {

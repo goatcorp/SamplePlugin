@@ -13,11 +13,11 @@ namespace AetherSenseRedux.Pattern
         private readonly double min;
         private readonly double max;
 
-        public RandomPattern(Dictionary<string, dynamic> config)
+        public RandomPattern(RandomPatternConfig config)
         {
-            Expires = DateTime.UtcNow + TimeSpan.FromMilliseconds((long)config["duration"]);
-            min = (double)config["min"];
-            max = (double)config["max"];
+            Expires = DateTime.UtcNow + TimeSpan.FromMilliseconds(config.Duration);
+            min = config.Minimum;
+            max = config.Maximum;
         }
 
         public double GetIntensityAtTime(DateTime time)
@@ -33,14 +33,15 @@ namespace AetherSenseRedux.Pattern
             return value * (max - min) + min;
         }
 
-        public static Dictionary<string, dynamic> GetDefaultConfiguration()
+        public static PatternConfig GetDefaultConfiguration()
         {
-            return new Dictionary<string, dynamic>
-            {
-                {"min", 0 },
-                {"max", 1 },
-                {"duration", 1000 }
-            };
+            return new RandomPatternConfig();
         }
+    }
+    [Serializable]
+    public class RandomPatternConfig : PatternConfig
+    {
+        public double Minimum { get; set; } = 0;
+        public double Maximum { get; set; } = 1;
     }
 }

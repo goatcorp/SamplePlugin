@@ -1,4 +1,6 @@
-﻿using Dalamud.Configuration;
+﻿using AetherSenseRedux.Pattern;
+using AetherSenseRedux.Trigger;
+using Dalamud.Configuration;
 using Dalamud.Plugin;
 using System;
 using System.Collections.Generic;
@@ -19,38 +21,33 @@ namespace AetherSenseRedux
 
         public List<string> SeenDevices { get; set; } = new();
 
-        public List<Dictionary<string, dynamic>> Triggers { get; set; } = new List<Dictionary<string, dynamic>> 
-        { 
-            new Dictionary<string, dynamic> 
+        public List<TriggerConfig> Triggers { get; set; } = new List<TriggerConfig>
+        {
+            new ChatTriggerConfig()
             {
-                {"type", "Chat" },
-                { "name", "Cast" },
-                { "enabledDevices", new List<string>()},
-                { "pattern", "Constant" },
-                { "patternSettings", new Dictionary<string, dynamic> 
-                    {
-                        {"level", 1 },
-                        {"duration", 250 }
-                    }
+                Name = "Casted",
+                EnabledDevices = new List<string>(),
+                Pattern = "Constant",
+                PatternSettings = new ConstantPatternConfig()
+                {
+                    Level = 1,
+                    Duration = 1000
                 },
-                { "regex", "You cast" },
-                { "retriggerDelay", 0 }
+                Regex = "You cast",
+                RetriggerDelay = 0
             },
-            new Dictionary<string, dynamic>
-            {
-                {"type", "Chat" },
-                { "name", "Casting" },
-                { "enabledDevices", new List<string>()},
-                { "pattern", "Ramp" },
-                { "patternSettings", new Dictionary<string, dynamic>
-                    {
-                        {"start", 0 },
-                        {"end", 0.75 },
-                        {"duration", 2500 }
-                    }
+            new ChatTriggerConfig(){
+                Name = "Casting",
+                EnabledDevices = new List<string>(),
+                Pattern = "Ramp",
+                PatternSettings = new RampPatternConfig()
+                {
+                    Start = 0,
+                    End = 0.75,
+                    Duration = 2500
                 },
-                { "regex", "You begin casting" },
-                { "retriggerDelay", 250 }
+                Regex = "You begin casting",
+                RetriggerDelay = 250
             }
         };
 

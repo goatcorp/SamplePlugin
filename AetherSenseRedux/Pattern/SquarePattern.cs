@@ -16,14 +16,14 @@ namespace AetherSenseRedux.Pattern
         private readonly long total_duration;
 
 
-        public SquarePattern(Dictionary<string, dynamic> config)
+        public SquarePattern(SquarePatternConfig config)
         {
-            level1 = (double)config["level1"];
-            level2 = (double)config["level2"];
-            duration1 = (long)config["duration1"];
-            offset = (long)config["offset"];
-            Expires = DateTime.UtcNow + TimeSpan.FromMilliseconds((long)config["duration"]);
-            total_duration = duration1 + (long)config["duration2"];
+            level1 = config.Level1;
+            level2 = config.Level2;
+            duration1 = config.Duration1;
+            offset = config.Offset;
+            Expires = DateTime.UtcNow + TimeSpan.FromMilliseconds(config.Duration);
+            total_duration = duration1 + config.Duration2;
         }
 
         public double GetIntensityAtTime(DateTime time)
@@ -38,17 +38,18 @@ namespace AetherSenseRedux.Pattern
 
             return (progress < duration1)? level1 : level2;
         }
-        public static Dictionary<string, dynamic> GetDefaultConfiguration()
+        public static PatternConfig GetDefaultConfiguration()
         {
-            return new Dictionary<string, dynamic>
-            {
-                {"level1", 0 },
-                {"level2", 1 },
-                {"duration1", 250 },
-                {"duration2", 250 },
-                {"offset", 0 },
-                {"duration", 1000 }
-            };
+            return new SquarePatternConfig();
         }
+    }
+    [Serializable]
+    public class SquarePatternConfig : PatternConfig
+    {
+        public double Level1 { get; set; } = 0;
+        public double Level2 { get; set; } = 1;
+        public long Duration1 { get; set; } = 200;
+        public long Duration2 { get; set; } = 200;
+        public long Offset { get; set; } = 0;
     }
 }

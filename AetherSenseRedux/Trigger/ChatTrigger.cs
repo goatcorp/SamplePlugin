@@ -16,32 +16,32 @@ namespace AetherSenseRedux.Trigger
         public bool Enabled { get; set; }
         public string Type { get; } = "ChatTrigger";
         public string Name { get; init; }
-        private readonly List<Device> Devices;
-        private readonly List<string> EnabledDevices;
-        private readonly string Pattern;
-        private readonly Dictionary<string, dynamic> PatternSettings;
+        public List<Device> Devices { get; init; }
+        public List<string> EnabledDevices { get; init; }
+        public string Pattern { get; init; }
+        public PatternConfig PatternSettings { get; init; }
 
         // ChatTrigger properties
-        private readonly List<ChatMessage> _messages;
-        private readonly Regex _regex;
-        private readonly long _retriggerDelay;
-        private DateTime _retriggerTime;
+        private List<ChatMessage> _messages;
+        public Regex Regex { get; init; }
+        public long RetriggerDelay { get; init; }
+        private DateTime RetriggerTime { get; set; }
 
-        public ChatTrigger(string name, ref List<Device> devices, List<string> enabledDevices, string pattern, Dictionary<string, dynamic> patternSettings, string regex, long retriggerDelay)
+        public ChatTrigger(ChatTriggerConfig configuration, ref List<Device> devices)
         {
             // ITrigger properties
             Enabled = true;
-            Name = name;
+            Name = configuration.Name;
+            Devices = devices;
+            EnabledDevices = configuration.EnabledDevices;
+            Pattern = configuration.Pattern;
+            PatternSettings = configuration.PatternSettings;
+            Regex = new Regex(configuration.Regex);
+            RetriggerDelay = configuration.RetriggerDelay;
 
             // ChatTrigger properties
-            Devices = devices;
-            EnabledDevices = enabledDevices;
-            Pattern = pattern;
-            PatternSettings = patternSettings;
             _messages = new List<ChatMessage>();
-            _regex = new Regex(regex);
-            _retriggerDelay = retriggerDelay;
-            _retriggerTime = DateTime.MinValue;
+            RetriggerTime = DateTime.MinValue;
 
         }
 
@@ -56,15 +56,15 @@ namespace AetherSenseRedux.Trigger
 
         private void OnTrigger()
         {
-            if (_retriggerDelay > 0)
+            if (RetriggerDelay > 0)
             {
-                if (DateTime.UtcNow < _retriggerTime)
+                if (DateTime.UtcNow < RetriggerTime)
                 {
                     return;
                 }
                 else
                 {
-                    _retriggerTime = DateTime.UtcNow + TimeSpan.FromMilliseconds(_retriggerDelay);
+                    RetriggerTime = DateTime.UtcNow + TimeSpan.FromMilliseconds(RetriggerDelay);
                 }
             }
             foreach (Device device in Devices)
@@ -96,7 +96,7 @@ namespace AetherSenseRedux.Trigger
                     foreach (ChatMessage message in _messages)
                     {
                         
-                        if (_regex.IsMatch(message.ToString()))
+                        if (Regex.IsMatch(message.ToString()))
                         {
                             OnTrigger();
                         }
@@ -108,19 +108,19 @@ namespace AetherSenseRedux.Trigger
                 await Task.Delay(10);
             }
         }
-        static Dictionary<string, dynamic> GetDefaultConfiguration()
+        static TriggerConfig GetDefaultConfiguration()
         {
-            return new Dictionary<string, dynamic>
-            {
-                {"type", "Chat" },
-                { "name", "New Chat Trigger" },
-                { "enabledDevices", new List<string>()},
-                { "pattern", "Constant" },
-                { "patternSettings", PatternFactory.GetDefaultsFromString("Constant") },
-                { "regex", "" },
-                { "retriggerDelay", 0 }
-            };
+            return new ChatTriggerConfig();
         }
+    }
+
+    [Serializable]
+    public class ChatTriggerConfig : TriggerConfig
+    {
+        public override string Type { get; } = "Chat";
+        public override string Name { get; set; } = "New Chat Trigger";
+        public string Regex { get; set; } = "Your Regex Here";
+        public long RetriggerDelay { get; set; } = 0;
     }
 
     struct ChatMessage

@@ -58,7 +58,7 @@ namespace AetherSenseRedux
 
             // you might normally want to embed resources and load them from the manifest stream
             var assemblyLocation = Assembly.GetExecutingAssembly().Location;
-            PluginUi = new PluginUI(Configuration);
+            PluginUi = new PluginUI(Configuration, this);
 
             CommandManager.AddHandler(commandName, new CommandInfo(OnShowUI)
             {
@@ -173,14 +173,14 @@ namespace AetherSenseRedux
             ChatGui.ChatMessage -= OnChatReceived;
             ChatTriggerPool.Clear();
         }
-        private void Start()
+        public void Start()
         {
             //Configuration.Enabled = true;            
             InitTriggers();
             InitButtplug();
         }
 
-        private void Restart()
+        public void Restart()
         {
             DestroyTriggers();
 
@@ -191,7 +191,7 @@ namespace AetherSenseRedux
             InitTriggers();
         }
 
-        private void Stop()
+        public void Stop()
         {
             DestroyTriggers();
             DestroyButtplug();

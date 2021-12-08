@@ -9,10 +9,10 @@ namespace AetherSenseRedux.Pattern
         public DateTime Expires { get; set; }
         private readonly double level;
 
-        public ConstantPattern(Dictionary<string, dynamic> config)
+        public ConstantPattern(ConstantPatternConfig config)
         {
-            level = (double)config["level"];
-            Expires = DateTime.UtcNow + TimeSpan.FromMilliseconds((long)config["duration"]);
+            level = config.Level;
+            Expires = DateTime.UtcNow + TimeSpan.FromMilliseconds(config.Duration);
         }
 
         public double GetIntensityAtTime(DateTime time)
@@ -23,13 +23,14 @@ namespace AetherSenseRedux.Pattern
             }
             return level;
         }
-        public static Dictionary<string, dynamic> GetDefaultConfiguration()
+        public static PatternConfig GetDefaultConfiguration()
         {
-            return new Dictionary<string, dynamic>
-            {
-                {"level", 1 },
-                {"duration", 1000 }
-            };
+            return new ConstantPatternConfig();
         }
+    }
+    [Serializable]
+    public class ConstantPatternConfig : PatternConfig
+    {
+        public double Level { get; set; } = 1;
     }
 }

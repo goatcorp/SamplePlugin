@@ -8,24 +8,24 @@ namespace AetherSenseRedux.Pattern
 {
     internal class PatternFactory
     {
-        public static IPattern GetPatternFromString(string name, Dictionary<string, dynamic> settings)
+        public static IPattern GetPatternFromString(string name, PatternConfig settings)
         {
             switch (name)
             {
                 case "Constant":
-                    return new ConstantPattern(settings);
+                    return new ConstantPattern((ConstantPatternConfig)settings);
                 case "Ramp":
-                    return new RampPattern(settings);
+                    return new RampPattern((RampPatternConfig)settings);
                 case "Random":
-                    return new RandomPattern(settings);
+                    return new RandomPattern((RandomPatternConfig)settings);
                 case "Square":
-                    return new SquarePattern(settings);
+                    return new SquarePattern((SquarePatternConfig)settings);
                 default:
                     throw new ArgumentException(String.Format("Invalid pattern {0} specified",name));
             }
         }
 
-        public static Dictionary<string,dynamic> GetDefaultsFromString(string name)
+        public static PatternConfig GetDefaultsFromString(string name)
         {
             switch (name)
             {

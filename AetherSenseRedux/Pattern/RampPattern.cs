@@ -14,11 +14,11 @@ namespace AetherSenseRedux.Pattern
         private readonly long duration;
 
 
-        public RampPattern(Dictionary<string, dynamic> config)
+        public RampPattern(RampPatternConfig config)
         {
-            startLevel = (double)config["start"];
-            endLevel = (double)config["end"];
-            this.duration = (long)config["duration"];
+            startLevel = config.Start;
+            endLevel = config.End;
+            this.duration = config.Duration;
             Expires = DateTime.UtcNow + TimeSpan.FromMilliseconds(duration);
         }
 
@@ -32,14 +32,15 @@ namespace AetherSenseRedux.Pattern
             return (endLevel - startLevel) * progress + startLevel;
         }
 
-        public static Dictionary<string, dynamic> GetDefaultConfiguration()
+        public static PatternConfig GetDefaultConfiguration()
         {
-            return new Dictionary<string, dynamic>
-            {
-                {"start", 0 },
-                {"end", 1 },
-                {"duration", 1000 }
-            };
+            return new RampPatternConfig();
         }
+    }
+    [Serializable]
+    public class RampPatternConfig : PatternConfig
+    {
+        public double Start { get; set; } = 0;
+        public double End { get; set; } = 1;
     }
 }

@@ -9,6 +9,7 @@ namespace AetherSenseRedux
     class PluginUI : IDisposable
     {
         private Configuration configuration;
+        private Plugin plugin;
 
         // this extra bool exists for ImGui, since you can't ref a property
         private bool visible = false;
@@ -26,9 +27,10 @@ namespace AetherSenseRedux
         }
 
         // passing in the image here just for simplicity
-        public PluginUI(Configuration configuration)
+        public PluginUI(Configuration configuration, Plugin plugin)
         {
             this.configuration = configuration;
+            this.plugin = plugin;
         }
 
         public void Dispose()
@@ -62,6 +64,14 @@ namespace AetherSenseRedux
             {
                 ImGui.Text($"The random config bool is {configuration.SomePropertyToBeSavedAndWithADefault}");
 
+                if (ImGui.Button("Start"))
+                {
+                    plugin.Start();
+                }
+                if (ImGui.Button("Stop"))
+                {
+                    plugin.Stop();
+                }
                 if (ImGui.Button("Show Settings"))
                 {
                     SettingsVisible = true;

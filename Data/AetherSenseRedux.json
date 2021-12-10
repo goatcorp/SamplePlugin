@@ -1,9 +1,12 @@
 {
   "Author": "Tama Gotchi",
   "Name": "AetherSense Redux (18+)",
-  "Punchline": "Advanced haptics on the moon",
+  "Punchline": "Buttplugs on the moon",
   "Description": "An advanced haptic feedback plugin using the Buttplug.io library.",
   "InternalName": "AetherSenseRedux",
+  "AssemblyVersion": "0.5.0.0",
+  "IsTestingExclusive": false,
+  "RepoUrl": "https://github.com/digital-pet/AetherSenseRedux",
   "ApplicableVersion": "any",
   "Tags": [
     "buttplug",

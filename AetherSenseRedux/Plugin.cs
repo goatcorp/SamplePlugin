@@ -22,6 +22,7 @@ namespace AetherSenseRedux
     public sealed class Plugin : IDalamudPlugin
     {
         public string Name => "AetherSense Redux";
+
         public bool Running = false;
 
         private const string commandName = "/asr";
@@ -31,7 +32,6 @@ namespace AetherSenseRedux
         private Configuration Configuration { get; set; }
         [PluginService] private ChatGui ChatGui { get; init; } = null!;
         private PluginUI PluginUi { get; init; }
-
 
         private ButtplugClient Buttplug;
 
@@ -84,6 +84,7 @@ namespace AetherSenseRedux
             CommandManager.RemoveHandler(commandName);
         }
 
+        // EVENT HANDLERS
         private void OnDeviceAdded(object? sender, DeviceAddedEventArgs e)
         {
 
@@ -93,7 +94,7 @@ namespace AetherSenseRedux
             if (!Configuration.SeenDevices.Contains(newDevice.Name)){
                 Configuration.SeenDevices.Add(newDevice.Name);
             }
-            Task.Run(newDevice.Run).ConfigureAwait(false);
+            newDevice.Start();
 
         }
 
@@ -119,37 +120,19 @@ namespace AetherSenseRedux
                     }
                 }
             }
-                foreach (Device device in toRemove)
+            foreach (Device device in toRemove)
+            {
+                lock (this.DevicePool)
                 {
-                    lock (this.DevicePool)
-                    {
-                        this.DevicePool.Remove(device);
-                    }
-                    
+                    this.DevicePool.Remove(device);
                 }
+                    
+            }
         }
 
-        // Instead of constant async scanning, it may make sense to simply scan when a command is issued
         private void OnScanComplete(object? sender, EventArgs e)
         {
             Task.Run(DoScan).ConfigureAwait(false);
-        }
-
-        public void DoPatternTest(dynamic patternConfig)
-        {
-            if (!Buttplug.Connected)
-            {
-                return;
-            }
-            lock (DevicePool) {
-                foreach (var device in this.DevicePool)
-                {
-                    lock (device.Patterns)
-                    {
-                        device.Patterns.Add(PatternFactory.GetPatternFromString(patternConfig.Type,patternConfig));
-                    }
-            }
-            }
         }
 
         private void OnChatReceived(XivChatType type, uint senderId, ref SeString sender, ref SeString message, ref bool isHandled)
@@ -164,9 +147,43 @@ namespace AetherSenseRedux
                 PluginLog.Debug(chatMessage.ToString());
             }
         }
+        // END EVENT HANDLERS
+
+        // SOME FUNCTIONS THAT DO THINGS
+        public void DoPatternTest(dynamic patternConfig)
+        {
+            if (!Buttplug.Connected)
+            {
+                return;
+            }
+            lock (DevicePool) {
+                foreach (var device in this.DevicePool)
+                {
+                    lock (device.Patterns)
+                    {
+                        device.Patterns.Add(PatternFactory.GetPatternFromObject(patternConfig));
+                    }
+            }
+            }
+        }
+
+        private async Task DoScan()
+        {
+            await Task.Delay(1000);
+            try
+            {
+                await Buttplug.StartScanningAsync();
+            }
+            catch (Exception ex)
+            {
+                PluginLog.Error(ex, "Asynchronous scanning failed.");
+            }
+        }
+        // END SOME FUNCTIONS THAT DO THINGS
+
+        // START AND STOP FUNCTIONS
         private void InitButtplug()
         {
-            //TODO: connect to buttplug and start scanning for devices
             if (!Buttplug.Connected)
             {
                 try
@@ -202,10 +219,15 @@ namespace AetherSenseRedux
             }
             catch (Exception ex)
             {
-                PluginLog.Error(ex, "Buttplug failed to connect");
+                PluginLog.Error(ex, "Buttplug failed to disconnect, reinitalizing ButtplugClient.");
+                Buttplug = new ButtplugClient("AetherSense Redux");
+                Buttplug.DeviceAdded += OnDeviceAdded;
+                Buttplug.DeviceRemoved += OnDeviceRemoved;
+                Buttplug.ScanningFinished += OnScanComplete;
             }
             PluginLog.Debug("Buttplug destroyed.");
         }
+
         private void InitTriggers()
         {
             foreach (var d in Configuration.Triggers)
@@ -229,6 +251,7 @@ namespace AetherSenseRedux
             ChatGui.ChatMessage += OnChatReceived;
             PluginLog.Debug("Triggers created");
         }
+
         private void DestroyTriggers()
         {
             foreach (ChatTrigger t in ChatTriggerPool)
@@ -240,6 +263,7 @@ namespace AetherSenseRedux
             ChatTriggerPool.Clear();
             PluginLog.Debug("Triggers destroyed.");
         }
+
         public void Start()
         {
             Running = true;            
@@ -250,11 +274,6 @@ namespace AetherSenseRedux
         public void Restart()
         {
             DestroyTriggers();
-
-            // while this works, a cleaner restart that doesn't drop the intiface connection may be in order
-            //Stop();
-            //Start();
-
             InitTriggers();
         }
 
@@ -266,20 +285,9 @@ namespace AetherSenseRedux
 
 
         }
+        // END START AND STOP FUNCTIONS
 
-        private async Task DoScan()
-        {
-            await Task.Delay(1000);
-            try
-            {
-                await Buttplug.StartScanningAsync();
-            }
-            catch (Exception ex)
-            {
-                PluginLog.Error(ex, "Asynchronous scanning failed.");
-            }
-        }
-
+        // UI FUNCTIONS
         private void OnShowUI(string command, string args)
         {
             // in response to the slash command, just display our main ui
@@ -295,5 +303,6 @@ namespace AetherSenseRedux
         {
             PluginUi.SettingsVisible = true;
         }
+        // END UI FUNCTIONS
     }
 }

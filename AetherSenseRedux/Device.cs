@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AetherSenseRedux.Pattern;
 using Buttplug;
+using Dalamud.Logging;
 
 namespace AetherSenseRedux
 {
@@ -23,12 +24,17 @@ namespace AetherSenseRedux
             _active = true;
         }
 
-        public async Task Run()
+        public void Start()
+        {
+            Task.Run(MainLoop).ConfigureAwait(false);
+        }
+
+        public async Task MainLoop()
         {
             while (_active)
             {
-                await OnTick();
-                await Task.Delay(10);
+                OnTick();
+                await Task.Yield();
             }
         }
 
@@ -37,11 +43,11 @@ namespace AetherSenseRedux
             _active = false;
             Patterns.Clear();
 
-            var t = Task.Run(() => WriteAsync(0));
+            var t = Task.Run(() => Write(0));
             t.Wait();
         }
 
-        private async Task OnTick()
+        private void OnTick()
         {
             List<double> intensities = new List<double>();
             DateTime t = DateTime.UtcNow;
@@ -71,10 +77,10 @@ namespace AetherSenseRedux
             //TODO: Allow different merge modes besides average
             double intensity = (intensities.Any()) ? intensities.Average() : 0;
 
-            await WriteAsync(intensity);
+            Write(intensity);
         }
 
-        private async Task WriteAsync(double intensity)
+        private void Write(double intensity)
         {
             // clamp intensity before comparing to reduce unnecessary writes to device
             double clampedIntensity = Clamp(intensity, 0, 1);
@@ -85,9 +91,20 @@ namespace AetherSenseRedux
             }
 
             _lastIntensity = clampedIntensity;
+            
+            // If we don't wait on this, bad things happen on Linux and disappointing things happen on Windows, especially with slow BLE adapters.
+            try
+            {
+                var t = ClientDevice.SendVibrateCmd(clampedIntensity);
+                t.Wait();
+            } catch (Exception)
+            {
+                // Connecting to an intiface server on Linux will spam the log with bluez errors
+                // so we just ignore all exceptions from this statement. Good? Probably not. Necessary? Yes.
+            }
 
-            await ClientDevice.SendVibrateCmd(clampedIntensity);
         }
+
         private static double Clamp(double value, double min, double max)
         {
             return (value < min) ? min : (value > max) ? max : value;

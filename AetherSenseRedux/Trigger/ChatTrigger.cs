@@ -82,7 +82,7 @@ namespace AetherSenseRedux.Trigger
                     {
                         lock (device.Patterns)
                         {
-                            device.Patterns.Add(PatternFactory.GetPatternFromString(Pattern, PatternSettings));
+                            device.Patterns.Add(PatternFactory.GetPatternFromObject(PatternSettings));
                         }
                     }
 

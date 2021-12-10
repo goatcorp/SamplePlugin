@@ -8,9 +8,9 @@ namespace AetherSenseRedux.Pattern
 {
     internal class PatternFactory
     {
-        public static IPattern GetPatternFromString(string name, PatternConfig settings)
+        public static IPattern GetPatternFromObject(PatternConfig settings)
         {
-            switch (name)
+            switch (settings.Type)
             {
                 case "Constant":
                     return new ConstantPattern((ConstantPatternConfig)settings);
@@ -21,7 +21,7 @@ namespace AetherSenseRedux.Pattern
                 case "Square":
                     return new SquarePattern((SquarePatternConfig)settings);
                 default:
-                    throw new ArgumentException(String.Format("Invalid pattern {0} specified",name));
+                    throw new ArgumentException(String.Format("Invalid pattern {0} specified", settings.Type));
             }
         }
 

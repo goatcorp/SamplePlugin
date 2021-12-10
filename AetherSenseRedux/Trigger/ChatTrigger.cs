@@ -133,6 +133,7 @@ namespace AetherSenseRedux.Trigger
         public override string Name { get; set; } = "New Chat Trigger";
         public string Regex { get; set; } = "Your Regex Here";
         public long RetriggerDelay { get; set; } = 0;
+
     }
 
     struct ChatMessage

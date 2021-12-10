@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dalamud.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,7 +29,7 @@ namespace AetherSenseRedux.Pattern
             {
                 throw new PatternExpiredException();
             }
-            double progress = (Expires.Ticks - time.Ticks) / TimeSpan.FromMilliseconds(duration).Ticks;
+            double progress = 1.0 - ((Expires.Ticks - time.Ticks) / ((double)duration*10000));
             return (endLevel - startLevel) * progress + startLevel;
         }
 

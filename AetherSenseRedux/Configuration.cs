@@ -1,6 +1,7 @@
 ﻿using AetherSenseRedux.Pattern;
 using AetherSenseRedux.Trigger;
 using Dalamud.Configuration;
+using Dalamud.Logging;
 using Dalamud.Plugin;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,8 @@ namespace AetherSenseRedux
     [Serializable]
     public class Configuration : IPluginConfiguration
     {
-        public int Version { get; set; } = 0;
+        public int Version { get; set; } = 1;
+        public bool Initialized = false;
 
         public bool LogChat { get; set; } = false;
 
@@ -19,7 +21,7 @@ namespace AetherSenseRedux
 
         public List<string> SeenDevices { get; set; } = new();
 
-        public List<ChatTriggerConfig> Triggers { get; set; } = new List<ChatTriggerConfig>();
+        public List<dynamic> Triggers { get; set; } = new List<dynamic>();
 
         // the below exist just to make saving less cumbersome
 
@@ -33,17 +35,24 @@ namespace AetherSenseRedux
 
         public void FixDeserialization()
         {
-            foreach (TriggerConfig t in Triggers)
+            List<TriggerConfig> triggers = new List<TriggerConfig>();
+            foreach (dynamic t in Triggers)
             {
-                var patternsettings = PatternFactory.GetPatternConfigFromObject(t.PatternSettings);
-                t.PatternSettings = patternsettings;
+                triggers.Add(TriggerFactory.GetTriggerConfigFromObject(t));
+            }
+            Triggers = new List<dynamic>();
 
+            foreach (TriggerConfig t in triggers)
+            {
+                Triggers.Add(t);
             }
         }
 
         public void LoadDefaults()
         {
-            Triggers = new List<ChatTriggerConfig>() {
+            Version = 1;
+            Initialized = true;
+            Triggers = new List<dynamic>() {
                 new ChatTriggerConfig()
                 {
                     Name = "Casted",
@@ -78,6 +87,38 @@ namespace AetherSenseRedux
         public void Save()
         {
             pluginInterface!.SavePluginConfig(this);
+        }
+
+        public void Import(dynamic o)
+        {
+            try
+            {
+                if (o.Version != 1)
+                {
+                    return;
+                }
+                Version = o.Version;
+                Initialized = o.Initialized;
+                LogChat = o.LogChat;
+                Address = o.Address;
+                SeenDevices = new List<string>(o.SeenDevices);
+                Triggers = o.Triggers;
+                FixDeserialization();
+            }
+            catch (Exception ex)
+            {
+                PluginLog.Error(ex, "Attempted to import a bad configuration.");
+            }
+        }
+        public Configuration CloneConfigurationFromDisk()
+        {
+            if (pluginInterface == null)
+            {
+                throw new NullReferenceException("Attempted to load the plugin configuration from a clone.");
+            }
+            var config = pluginInterface!.GetPluginConfig() as Configuration ?? throw new NullReferenceException("No configuration exists on disk.");
+            config.FixDeserialization();
+            return config;
         }
     }
 }

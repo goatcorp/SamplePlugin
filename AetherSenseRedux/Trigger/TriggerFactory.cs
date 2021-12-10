@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using AetherSenseRedux.Pattern;
 
 namespace AetherSenseRedux.Trigger
 {
@@ -22,6 +23,11 @@ namespace AetherSenseRedux.Trigger
 
         public static TriggerConfig GetTriggerConfigFromObject(dynamic o)
         {
+            var devices = new List<string>();
+            foreach (var device in o.EnabledDevices)
+            {
+                devices.Add((string)device);
+            }
             switch ((string)o.Type)
             {
                 case "Chat":
@@ -30,10 +36,10 @@ namespace AetherSenseRedux.Trigger
                         Name = (string)o.Name,
                         Regex = (string)o.Regex,
                         RetriggerDelay = (long)o.RetriggerDelay,
-                        EnabledDevices = (List<string>)o.EnabledDevices,
+                        EnabledDevices = devices,
                         Pattern = (string)o.Pattern,
-                        PatternSettings = (dynamic)o.PatternSettings
-                    };
+                        PatternSettings = PatternFactory.GetPatternConfigFromObject(o.PatternSettings)
+            };
                 default:
                     throw new ArgumentException(String.Format("Invalid trigger {0} specified", o.Type));
             }

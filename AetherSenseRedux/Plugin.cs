@@ -15,23 +15,25 @@ using System.Threading.Tasks;
 using Buttplug;
 using AetherSenseRedux.Trigger;
 using System.Collections.Concurrent;
+using AetherSenseRedux.Pattern;
 
 namespace AetherSenseRedux
 {
     public sealed class Plugin : IDalamudPlugin
     {
         public string Name => "AetherSense Redux";
+        public bool Running = false;
 
         private const string commandName = "/asr";
 
         private DalamudPluginInterface PluginInterface { get; init; }
         private CommandManager CommandManager { get; init; }
-        private Configuration Configuration { get; init; }
+        private Configuration Configuration { get; set; }
         [PluginService] private ChatGui ChatGui { get; init; } = null!;
         private PluginUI PluginUi { get; init; }
 
 
-        private readonly ButtplugClient Buttplug;
+        private ButtplugClient Buttplug;
 
         private List<Device> DevicePool;
 
@@ -57,6 +59,10 @@ namespace AetherSenseRedux
             Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             Configuration.Initialize(PluginInterface);
             Configuration.FixDeserialization();
+            if (!Configuration.Initialized)
+            {
+                Configuration.LoadDefaults();
+            }
 
             // you might normally want to embed resources and load them from the manifest stream
             var assemblyLocation = Assembly.GetExecutingAssembly().Location;
@@ -129,6 +135,23 @@ namespace AetherSenseRedux
             Task.Run(DoScan).ConfigureAwait(false);
         }
 
+        public void DoPatternTest(dynamic patternConfig)
+        {
+            if (!Buttplug.Connected)
+            {
+                return;
+            }
+            lock (DevicePool) {
+                foreach (var device in this.DevicePool)
+                {
+                    lock (device.Patterns)
+                    {
+                        device.Patterns.Add(PatternFactory.GetPatternFromString(patternConfig.Type,patternConfig));
+                    }
+            }
+            }
+        }
+
         private void OnChatReceived(XivChatType type, uint senderId, ref SeString sender, ref SeString message, ref bool isHandled)
         {
             ChatMessage chatMessage = new ChatMessage(type, senderId, ref sender, ref message, ref isHandled);
@@ -155,12 +178,10 @@ namespace AetherSenseRedux
                 catch (Exception ex)
                 {
                     PluginLog.Error(ex, "Buttplug failed to connect");
+                    Stop();
                 }
             }
-            if (Buttplug.Connected)
-            {
-                Task.Run(DoScan).ConfigureAwait(false);
-            }
+            Task.Run(DoScan).ConfigureAwait(false);
             PluginLog.Debug("Buttplug created.");
         }
 
@@ -221,7 +242,7 @@ namespace AetherSenseRedux
         }
         public void Start()
         {
-            //Configuration.Enabled = true;            
+            Running = true;            
             InitTriggers();
             InitButtplug();
         }
@@ -241,7 +262,7 @@ namespace AetherSenseRedux
         {
             DestroyTriggers();
             DestroyButtplug();
-            //Configuration.Enabled = false;
+            Running = false;
 
 
         }
@@ -262,7 +283,7 @@ namespace AetherSenseRedux
         private void OnShowUI(string command, string args)
         {
             // in response to the slash command, just display our main ui
-            PluginUi.Visible = true;
+            PluginUi.SettingsVisible = true;
         }
 
         private void DrawUI()

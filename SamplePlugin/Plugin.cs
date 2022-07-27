@@ -35,7 +35,6 @@ namespace SamplePlugin
             
             WindowSystem.AddWindow(new ConfigWindow(Configuration));
             WindowSystem.AddWindow(new MainWindow(goatImage, Configuration, WindowSystem));
-
             
             this.CommandManager.AddHandler(commandName, new CommandInfo(OnCommand)
             {

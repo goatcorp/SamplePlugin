@@ -4,15 +4,16 @@ using Dalamud.Interface.Windowing;
 using ImGuiNET;
 using ImGuiScene;
 
-namespace SamplePlugin.Windows; 
+namespace SamplePlugin.Windows;
 
 public class MainWindow : Window, IDisposable {
     private TextureWrap goatImage;
     private Configuration configuration;
     private WindowSystem windowSystem;
 
-    public MainWindow(TextureWrap goatImage, Configuration configuration, WindowSystem windowSystem) : base("My Amazing Window", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse) {
-        SizeConstraints = new WindowSizeConstraints {
+    public MainWindow(TextureWrap goatImage, Configuration configuration, WindowSystem windowSystem) : base(
+        "My Amazing Window", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse) {
+        this.SizeConstraints = new WindowSizeConstraints {
             MinimumSize = new Vector2(375, 330),
             MaximumSize = new Vector2(float.MaxValue, float.MaxValue)
         };

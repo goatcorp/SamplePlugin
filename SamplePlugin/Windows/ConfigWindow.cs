@@ -6,27 +6,27 @@ using ImGuiNET;
 namespace SamplePlugin.Windows;
 
 public class ConfigWindow : Window, IDisposable {
-    private Configuration configuration;
+    private Configuration Configuration;
 
-    public ConfigWindow(Configuration configuration) : base(
+    public ConfigWindow(Plugin plugin) : base(
         "A Wonderful Configuration Window",
         ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoScrollbar |
         ImGuiWindowFlags.NoScrollWithMouse) {
         this.Size = new Vector2(232, 75);
         this.SizeCondition = ImGuiCond.Always;
 
-        this.configuration = configuration;
+        this.Configuration = plugin.Configuration;
     }
 
     public void Dispose() { }
 
     public override void Draw() {
         // can't ref a property, so use a local copy
-        var configValue = this.configuration.SomePropertyToBeSavedAndWithADefault;
+        var configValue = this.Configuration.SomePropertyToBeSavedAndWithADefault;
         if (ImGui.Checkbox("Random Config Bool", ref configValue)) {
-            this.configuration.SomePropertyToBeSavedAndWithADefault = configValue;
+            this.Configuration.SomePropertyToBeSavedAndWithADefault = configValue;
             // can save immediately on change, if you don't want to provide a "Save and Close" button
-            this.configuration.Save();
+            this.Configuration.Save();
         }
     }
 }

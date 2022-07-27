@@ -3,6 +3,8 @@ using Dalamud.IoC;
 using Dalamud.Plugin;
 using System.IO;
 using System.Reflection;
+using Dalamud.Interface.Windowing;
+using SamplePlugin.Windows;
 
 namespace SamplePlugin
 {
@@ -14,8 +16,8 @@ namespace SamplePlugin
 
         private DalamudPluginInterface PluginInterface { get; init; }
         private CommandManager CommandManager { get; init; }
-        private Configuration Configuration { get; init; }
-        private PluginUI PluginUi { get; init; }
+        public Configuration Configuration { get; init; }
+        private WindowSystem WindowSystem = new("SamplePlugin");
 
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
@@ -30,8 +32,11 @@ namespace SamplePlugin
             // you might normally want to embed resources and load them from the manifest stream
             var imagePath = Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "goat.png");
             var goatImage = this.PluginInterface.UiBuilder.LoadImage(imagePath);
-            this.PluginUi = new PluginUI(this.Configuration, goatImage);
+            
+            WindowSystem.AddWindow(new ConfigWindow(Configuration));
+            WindowSystem.AddWindow(new MainWindow(goatImage, Configuration, WindowSystem));
 
+            
             this.CommandManager.AddHandler(commandName, new CommandInfo(OnCommand)
             {
                 HelpMessage = "A useful message to display in /xlhelp"
@@ -43,24 +48,23 @@ namespace SamplePlugin
 
         public void Dispose()
         {
-            this.PluginUi.Dispose();
+            this.WindowSystem.RemoveAllWindows();
             this.CommandManager.RemoveHandler(commandName);
         }
 
         private void OnCommand(string command, string args)
         {
             // in response to the slash command, just display our main ui
-            this.PluginUi.Visible = true;
+            WindowSystem.GetWindow("My Amazing Window").IsOpen = true;
         }
 
-        private void DrawUI()
-        {
-            this.PluginUi.Draw();
+        private void DrawUI() {
+            this.WindowSystem.Draw();
         }
 
         private void DrawConfigUI()
         {
-            this.PluginUi.SettingsVisible = true;
+            WindowSystem.GetWindow("A Wonderful Configuration Window").IsOpen = true;
         }
     }
 }

@@ -3,19 +3,20 @@ using Dalamud.IoC;
 using Dalamud.Plugin;
 using System.IO;
 using System.Reflection;
+using Dalamud.Interface.Windowing;
+using SamplePlugin.Windows;
 
 namespace SamplePlugin
 {
     public sealed class Plugin : IDalamudPlugin
     {
         public string Name => "Sample Plugin";
-
-        private const string commandName = "/pmycommand";
+        private const string CommandName = "/pmycommand";
 
         private DalamudPluginInterface PluginInterface { get; init; }
         private CommandManager CommandManager { get; init; }
-        private Configuration Configuration { get; init; }
-        private PluginUI PluginUi { get; init; }
+        public Configuration Configuration { get; init; }
+        public WindowSystem WindowSystem = new("SamplePlugin");
 
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
@@ -30,9 +31,11 @@ namespace SamplePlugin
             // you might normally want to embed resources and load them from the manifest stream
             var imagePath = Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "goat.png");
             var goatImage = this.PluginInterface.UiBuilder.LoadImage(imagePath);
-            this.PluginUi = new PluginUI(this.Configuration, goatImage);
 
-            this.CommandManager.AddHandler(commandName, new CommandInfo(OnCommand)
+            WindowSystem.AddWindow(new ConfigWindow(this));
+            WindowSystem.AddWindow(new MainWindow(this, goatImage));
+
+            this.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
             {
                 HelpMessage = "A useful message to display in /xlhelp"
             });
@@ -43,24 +46,24 @@ namespace SamplePlugin
 
         public void Dispose()
         {
-            this.PluginUi.Dispose();
-            this.CommandManager.RemoveHandler(commandName);
+            this.WindowSystem.RemoveAllWindows();
+            this.CommandManager.RemoveHandler(CommandName);
         }
 
         private void OnCommand(string command, string args)
         {
             // in response to the slash command, just display our main ui
-            this.PluginUi.Visible = true;
+            WindowSystem.GetWindow("My Amazing Window").IsOpen = true;
         }
 
         private void DrawUI()
         {
-            this.PluginUi.Draw();
+            this.WindowSystem.Draw();
         }
 
-        private void DrawConfigUI()
+        public void DrawConfigUI()
         {
-            this.PluginUi.SettingsVisible = true;
+            WindowSystem.GetWindow("A Wonderful Configuration Window").IsOpen = true;
         }
     }
 }

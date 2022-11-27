@@ -1,8 +1,8 @@
-﻿using Dalamud.Configuration;
+using Dalamud.Configuration;
 using Dalamud.Plugin;
 using System;
 
-namespace SamplePlugin
+namespace Dancingway
 {
     [Serializable]
     public class Configuration : IPluginConfiguration

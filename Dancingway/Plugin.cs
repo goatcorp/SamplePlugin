@@ -1,22 +1,22 @@
-﻿using Dalamud.Game.Command;
+using Dalamud.Game.Command;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using System.IO;
 using System.Reflection;
 using Dalamud.Interface.Windowing;
-using SamplePlugin.Windows;
+using Dancingway.Windows;
 
-namespace SamplePlugin
+namespace Dancingway
 {
     public sealed class Plugin : IDalamudPlugin
     {
-        public string Name => "Sample Plugin";
+        public string Name => "Dancingway";
         private const string CommandName = "/pmycommand";
 
         private DalamudPluginInterface PluginInterface { get; init; }
         private CommandManager CommandManager { get; init; }
         public Configuration Configuration { get; init; }
-        public WindowSystem WindowSystem = new("SamplePlugin");
+        public WindowSystem WindowSystem = new("Dancingway");
 
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,

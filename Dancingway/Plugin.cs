@@ -5,18 +5,25 @@ using System.IO;
 using System.Reflection;
 using Dalamud.Interface.Windowing;
 using Dancingway.Windows;
+using XivCommon.Functions;
+using XivCommon;
+using System.Dynamic;
 
 namespace Dancingway
 {
     public sealed class Plugin : IDalamudPlugin
     {
         public string Name => "Dancingway";
-        private const string CommandName = "/pmycommand";
 
         private DalamudPluginInterface PluginInterface { get; init; }
         private CommandManager CommandManager { get; init; }
+
+        private XivCommonBase XivCommon { get; }
+
         public Configuration Configuration { get; init; }
         public WindowSystem WindowSystem = new("Dancingway");
+
+        public Dancingway.EmoteList emoteLister = new Emotelist;
 
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
@@ -24,6 +31,7 @@ namespace Dancingway
         {
             this.PluginInterface = pluginInterface;
             this.CommandManager = commandManager;
+            XivCommon = new XivCommonBase();
 
             this.Configuration = this.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             this.Configuration.Initialize(this.PluginInterface);
@@ -35,9 +43,16 @@ namespace Dancingway
             WindowSystem.AddWindow(new ConfigWindow(this));
             WindowSystem.AddWindow(new MainWindow(this, goatImage));
 
-            this.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
+            //this.CommandManager.AddHandler(CommandName, new CommandInfo(OnDancingway)
+            this.CommandManager.AddHandler("/dancingway", new CommandInfo(OnDancingway)
             {
-                HelpMessage = "A useful message to display in /xlhelp"
+                HelpMessage = "Open Dancingway settings window. Use '/dancingway'."
+            });
+
+            //this.CommandManager.AddHandler(CommandName, new CommandInfo(OnDDR)
+            this.CommandManager.AddHandler("/ddr", new CommandInfo(OnDDR)
+            {
+                HelpMessage = "Executes a random dance from the chosen list. Use '/ddr'."
             });
 
             this.PluginInterface.UiBuilder.Draw += DrawUI;
@@ -47,13 +62,29 @@ namespace Dancingway
         public void Dispose()
         {
             this.WindowSystem.RemoveAllWindows();
-            this.CommandManager.RemoveHandler(CommandName);
+            this.CommandManager.RemoveHandler("/dancingway");
+            this.CommandManager.RemoveHandler("/ddr");
         }
 
-        private void OnCommand(string command, string args)
+        private void OnDancingway(string command, string args)
         {
             // in response to the slash command, just display our main ui
-            WindowSystem.GetWindow("My Amazing Window").IsOpen = true;
+            WindowSystem.GetWindow("Dancingway Settings Window").IsOpen = true;
+            // initialise the list of emotes
+            Emotelist.InitialiseEmoteList();
+
+            // TEST TEST
+            Emotelist.TestBuild();
+        }
+
+        private void OnDDR(string command, string args)
+        {
+            /* in response to the slash command, dance, baby, dance!
+            XivCommon.Functions.Chat.SendMessage("/dance");
+            old code */
+
+            // new test code
+            XivCommon.Functions.Chat.SendMessage("/dance");
         }
 
         private void DrawUI()

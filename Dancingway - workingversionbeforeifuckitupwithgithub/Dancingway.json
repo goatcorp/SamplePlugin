@@ -1,0 +1,13 @@
+{
+    "Author": "Callistemon Yamadori",
+    "Name": "Dancingway",
+    "Punchline": "A plugin to provide a roulette for dancing emotes.",
+    "Description": "A plugin to provide a roulette for dancing emotes. Dancingway Decider Roulette: /ddr, Settings: /dancingway",
+    "InternalName": "dancingway",
+    "ApplicableVersion": "any",
+    "Tags": [
+        "dancingway",
+        "plugin",
+        "emotes"
+    ]
+}

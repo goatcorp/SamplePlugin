@@ -27,7 +27,7 @@ jobs:
         Expand-Archive -Force latest.zip "$env:AppData\XIVLauncher\addon\Hooks\dev"
 
     - name: Build with dotnet
-      run: dotnet build --configuration Debug
+      run: dotnet build --configuration Release
 
     - name: Store artifacts
       uses: actions/upload-artifact@v3

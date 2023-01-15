@@ -1,0 +1,39 @@
+name: Sample PR Builder for SamplePlugin
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+    runs-on: windows-2022
+
+    env:
+      Solution_Name: SamplePlugin
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+
+    - name: Download Dalamud
+      run: |
+        Invoke-WebRequest -Uri https://goatcorp.github.io/dalamud-distrib/latest.zip -OutFile latest.zip
+        Expand-Archive -Force latest.zip "$env:AppData\XIVLauncher\addon\Hooks\dev"
+
+    - name: Build with dotnet
+      run: dotnet build --configuration Debug
+
+    - name: Store artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: SamplePlugin
+        path: .\SamplePlugin\bin\x64\Release\SamplePlugin\*
+        if-no-files-found: error
+        retention-days: 1
+

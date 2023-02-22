@@ -1,8 +1,7 @@
 using Dalamud.Game.Command;
+using Dalamud.Interface.Windowing;
 using Dalamud.IoC;
 using Dalamud.Plugin;
-using System.IO;
-using Dalamud.Interface.Windowing;
 using SamplePlugin.Windows;
 
 namespace SamplePlugin
@@ -22,31 +21,27 @@ namespace SamplePlugin
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
             [RequiredVersion("1.0")] CommandManager commandManager)
         {
-            this.PluginInterface = pluginInterface;
-            this.CommandManager = commandManager;
-
-            // you might normally want to embed resources and load them from the manifest stream
-            var imagePath = Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "goat.png");
-            var goatImage = this.PluginInterface.UiBuilder.LoadImage(imagePath);
+            PluginInterface = pluginInterface;
+            CommandManager = commandManager;
 
             MainWindow = new MainWindow();
             WindowSystem.AddWindow(MainWindow);
 
-            this.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
+            CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
             {
                 HelpMessage = "A useful message to display in /xlhelp"
             });
 
-            this.PluginInterface.UiBuilder.Draw += DrawUI;
+            PluginInterface.UiBuilder.Draw += DrawUI;
         }
 
         public void Dispose()
         {
-            this.WindowSystem.RemoveAllWindows();
-            
+            WindowSystem.RemoveAllWindows();
+
             MainWindow.Dispose();
-            
-            this.CommandManager.RemoveHandler(CommandName);
+
+            CommandManager.RemoveHandler(CommandName);
         }
 
         private void OnCommand(string command, string args)

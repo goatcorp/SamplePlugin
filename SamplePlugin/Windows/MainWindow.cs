@@ -26,9 +26,13 @@ public class MainWindow : Window, IDisposable
     public void GeneratePlayers(string playerName)
     {
         ImGui.Text(playerName);
-        ImGui.SameLine();
-        ImGui.InputInt("some value", ref player1Bet, 1, 2, 0);
-        ImGui.SameLine();
+    }
+    public void BetsPlacement(string bets)
+    {
+        ImGui.InputInt("some value", ref player1Bet, 1, 2, 0); 
+    }
+    public void CardsButton()
+    {
         if (ImGui.Button("This is a button"))
         {
             // Do something when pressed -> Hit a card
@@ -43,11 +47,11 @@ public class MainWindow : Window, IDisposable
         {
             // Do something when pressed: enable disable plugin
         }
-        ImGui.BeginTable("Table1", 2);
+        ImGui.BeginTable("Table1", 3);
     ImGui.TableSetupColumn("Player");
     ImGui.TableSetupColumn("Bets");
     ImGui.TableSetupColumn("Cards");
-    ImGui.TableNextRow();
+    ImGui.TableNextColumn();
         ImGui.Text(host);
         ImGui.TableNextColumn();
         ImGui.Text("total bet");
@@ -56,11 +60,16 @@ public class MainWindow : Window, IDisposable
         {
             // Do something when pressed
         }
-        ImGui.TableNextRow();
+        ImGui.TableNextColumn();
         for (int i = 1; i <= 8; i++)
         {
             GeneratePlayers("Player " + i);
-            ImGui.TableNextRow();
+            ImGui.TableNextColumn();
+            BetsPlacement("player " + player1Bet);
+            ImGui.TableNextColumn();
+            CardsButton();
+            ImGui.TableNextColumn();
+
         }
 
         ImGui.EndTable();

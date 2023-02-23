@@ -1,7 +1,9 @@
+using Dalamud.Game.ClientState.Party;
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.IoC;
 using Dalamud.Plugin;
+using SamplePlugin.Utils;
 using SamplePlugin.Windows;
 
 namespace SamplePlugin
@@ -15,16 +17,19 @@ namespace SamplePlugin
         private CommandManager CommandManager { get; init; }
         public WindowSystem WindowSystem = new("SamplePlugin");
 
+        private DalamudUtils dutils { get; init; }
         private MainWindow MainWindow { get; init; }
 
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
-            [RequiredVersion("1.0")] CommandManager commandManager)
+            [RequiredVersion("1.0")] CommandManager commandManager,
+            [RequiredVersion("1.0")] PartyList partyList)
         {
             PluginInterface = pluginInterface;
             CommandManager = commandManager;
 
-            MainWindow = new MainWindow();
+            dutils = new DalamudUtils(partyList);
+            MainWindow = new MainWindow(dutils);
             WindowSystem.AddWindow(MainWindow);
 
             CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)

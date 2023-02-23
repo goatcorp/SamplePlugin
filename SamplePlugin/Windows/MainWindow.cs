@@ -4,11 +4,30 @@ using Lumina.Excel.GeneratedSheets;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Numerics;
+using Dalamud.Game.Text;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+
+using Dalamud.Configuration.Internal;
+using Dalamud.Game.Libc;
+using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Game.Text.SeStringHandling.Payloads;
+using Dalamud.Hooking;
+using Dalamud.IoC;
+using Dalamud.IoC.Internal;
+using Dalamud.Utility;
+using Dalamud;
+using Dalamud.Game.ClientState.Party;
+using System.Collections;
+
 namespace SamplePlugin.Windows;
+
+
 
 public class MainWindow : Window, IDisposable
 {
-    private int player1Bet = 0;
+    private int player1Bet = 100;
     private int player2Bet = 0;
     public MainWindow() : base("Baccarat by Moonhell", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
     {
@@ -29,29 +48,54 @@ public class MainWindow : Window, IDisposable
     }
     public void BetsPlacement(string bets)
     {
-        ImGui.InputInt("some value", ref player1Bet, 1, 2, 0); 
+        ImGui.InputInt("", ref player1Bet, 0); 
     }
     public void CardsButton()
     {
-        if (ImGui.Button("This is a button"))
+        if (ImGui.Button("1"))
         {
             // Do something when pressed -> Hit a card
         }
     }
+
     public override void Draw()
     {
+        bool activated = false;
+        float width = 2.0f;
+       /* int switchTabs = 3;
+
+        if (ImGui.Button("Aimbot"))
+            switchTabs = 0;
+        ImGui.SameLine();
+        if (ImGui.Button("Visuals"))
+            switchTabs = 1;
+        ImGui.SameLine();
+        if (ImGui.Button("Misc"))
+            switchTabs = 2;
+
+        switch (switchTabs)
+        {
+            case 0:
+                //Do stuff for Aim tab, next for vis, and last for misc tab
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+        }
+        ImGui.Separator();*/
         string host = "Moonhell";
         int totalBet = player1Bet + player2Bet;
         ImGui.Text($"This is your main window. You won't need any more window if you plan on using tabs.");
-        if (ImGui.Button("This is a button"))
+        if (ImGui.Checkbox("Enable", ref activated))
         {
-            // Do something when pressed: enable disable plugin
+            
         }
         ImGui.BeginTable("Table1", 3);
-    ImGui.TableSetupColumn("Player");
-    ImGui.TableSetupColumn("Bets");
-    ImGui.TableSetupColumn("Cards");
-    ImGui.TableNextColumn();
+        ImGui.TableSetupColumn("Player", 0, width = 3.0f);
+        ImGui.TableSetupColumn("Bets",0, width = 2.0f);
+        ImGui.TableSetupColumn("Cards", 0, width = 2.0f);
+        ImGui.TableNextColumn();
         ImGui.Text(host);
         ImGui.TableNextColumn();
         ImGui.Text("total bet");

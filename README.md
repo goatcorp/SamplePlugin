@@ -2,7 +2,7 @@
 
 Simple example plugin for Dalamud.
 
-This is not designed to be the simplest possible example, but it is also not designed to cover everything you might want to do. For more detailed questions, come ask in [the Discord](https://discord.gg/3NMcUV5).
+This is not designed to be the simplest possible example, but it is also not designed to cover everything you might want to do. For more detailed questions, come ask in [the Discord](https://discord.gg/holdshift).
 
 ## Main Points
 
@@ -23,7 +23,18 @@ This is not designed to be the simplest possible example, but it is also not des
 
 The intention is less that any of this is used directly in other projects, and more to show how similar things can be done.
 
-## To Use
+## How To Use
+
+### Getting Started
+
+To begin, [clone this template repository][new-repo] to your own GitHub account. This will automatically bring in everything you need to get a jumpstart on development. You do not need to fork this repository unless you intend to contribute modifications to it.
+
+Be sure to also check out the [Dalamud Developer Docs][dalamud-docs] for helpful information about building your own plugin. The Developer Docs includes helpful information about all sorts of things, including [how to submit][submit] your newly-created plugin to the official repository. Assuming you use this template repository, the provided project build configuration and license are already chosen to make everything a breeze.
+
+[new-repo]: https://github.com/new?template_name=SamplePlugin&template_owner=goatcorp
+[dalamud-docs]: https://dalamud.dev
+[submit]: https://dalamud.dev/plugin-development/plugin-submission
+
 ### Building
 
 1. Open up `SamplePlugin.sln` in your C# editor of choice (likely [Visual Studio 2022](https://visualstudio.microsoft.com) or [JetBrains Rider](https://www.jetbrains.com/rider/)).
@@ -42,6 +53,6 @@ Note that you only need to add it to the Dev Plugin Locations once (Step 1); it 
 
 ### Reconfiguring for your own uses
 
-Basically, just replace all references to `SamplePlugin` in all of the files and filenames with your desired name. You'll figure it out 😁
+Basically, just replace all references to `SamplePlugin` in all of the files and filenames with your desired name, then start building the plugin of your dreams. You'll figure it out 😁
 
 Dalamud will load the JSON file (by default, `SamplePlugin/SamplePlugin.json`) next to your DLL and use it for metadata, including the description for your plugin in the Plugin Installer. Make sure to update this with information relevant to _your_ plugin!

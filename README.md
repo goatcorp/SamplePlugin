@@ -24,6 +24,16 @@ This is not designed to be the simplest possible example, but it is also not des
 The intention is less that any of this is used directly in other projects, and more to show how similar things can be done.
 
 ## To Use
+
+### Prerequisites
+
+SamplePlugin assumes all the following prerequisites are met:
+
+* XIVLauncher, FINAL FANTASY XIV, and Dalamud have all been installed and the game has been run with Dalamud at least once.
+* XIVLauncher is installed to its default directories and configurations.
+  * If a custom path is required for Dalamud's dev directory, it must be set with the `DALAMUD_HOME` environment variable.
+* A .NET Core 7 SDK has been installed and configured, or is otherwise available. (In most cases, the IDE will take care of this.)
+
 ### Building
 
 1. Open up `SamplePlugin.sln` in your C# editor of choice (likely [Visual Studio 2022](https://visualstudio.microsoft.com) or [JetBrains Rider](https://www.jetbrains.com/rider/)).

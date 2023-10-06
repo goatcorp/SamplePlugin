@@ -166,6 +166,5 @@ resharper_unused_auto_property_accessor_global_highlighting = none
 tab_width = 4
 
 [*.{yaml,yml}]
-indent_style = space
 indent_size = 2
 tab_width = 2

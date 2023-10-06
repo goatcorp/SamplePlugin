@@ -52,6 +52,10 @@ dotnet_style_parentheses_in_other_operators = always_for_clarity:silent
 dotnet_style_predefined_type_for_member_access = true:suggestion
 dotnet_style_require_accessibility_modifiers = for_non_interface_members:suggestion
 dotnet_style_object_initializer = false
+dotnet_style_qualification_for_event = true:suggestion
+dotnet_style_qualification_for_field = true:suggestion
+dotnet_style_qualification_for_method = true:suggestion
+dotnet_style_qualification_for_property = true:suggestion
 
 
 ### Custom naming rules
@@ -62,10 +66,6 @@ dotnet_naming_style.lower_camel_case_style.capitalization = camel_case
 
 # upper_camel_case_style
 dotnet_naming_style.upper_camel_case_style.capitalization = pascal_case
-
-# on_upper_camel_case_style 
-dotnet_naming_style.on_upper_camel_case_style.capitalization = pascal_case
-dotnet_naming_style.on_upper_camel_case_style.required_prefix = On
 
 ## symbol groups
 # event_symbols
@@ -93,7 +93,7 @@ dotnet_naming_symbols.private_static_readonly_symbols.required_modifiers = stati
 
 ## naming_rules
 dotnet_naming_rule.event_rule.severity = warning
-dotnet_naming_rule.event_rule.style = on_upper_camel_case_style
+dotnet_naming_rule.event_rule.style = upper_camel_case_style
 dotnet_naming_rule.event_rule.symbols = event_symbols
 
 dotnet_naming_rule.private_constants_rule.severity = warning
@@ -105,7 +105,7 @@ dotnet_naming_rule.private_instance_fields_rule.style = lower_camel_case_style
 dotnet_naming_rule.private_instance_fields_rule.symbols = private_instance_fields_symbols
 
 dotnet_naming_rule.private_static_fields_rule.severity = warning
-dotnet_naming_rule.private_static_fields_rule.style = upper_camel_case_style
+dotnet_naming_rule.private_static_fields_rule.style = lower_camel_case_style
 dotnet_naming_rule.private_static_fields_rule.symbols = private_static_fields_symbols
 
 dotnet_naming_rule.private_static_readonly_rule.severity = warning
@@ -129,7 +129,7 @@ resharper_braces_for_ifelse = required_for_multiline
 resharper_can_use_global_alias = false
 resharper_csharp_align_multiline_parameter = true
 resharper_csharp_align_multiple_declaration = true
-resharper_csharp_empty_block_style = together_same_line
+resharper_csharp_empty_block_style = multiline
 resharper_csharp_int_align_comments = true
 resharper_csharp_new_line_before_while = true
 resharper_csharp_wrap_after_declaration_lpar = true
@@ -164,3 +164,8 @@ resharper_unused_auto_property_accessor_global_highlighting = none
 
 [*.{appxmanifest,asax,ascx,aspx,axaml,axml,build,c,c++,cc,cginc,compute,config,cp,cpp,cs,cshtml,csproj,css,cu,cuh,cxx,dbml,discomap,dtd,h,hh,hlsl,hlsli,hlslinc,hpp,htm,html,hxx,inc,inl,ino,ipp,js,json,jsproj,jsx,lsproj,master,mpp,mq4,mq5,mqh,njsproj,nuspec,paml,proj,props,proto,razor,resjson,resw,resx,skin,StyleCop,targets,tasks,tpp,ts,tsx,usf,ush,vb,vbproj,xaml,xamlx,xml,xoml,xsd}]
 tab_width = 4
+
+[*.{yaml,yml}]
+indent_style = space
+indent_size = 2
+tab_width = 2

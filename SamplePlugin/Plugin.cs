@@ -42,7 +42,7 @@ namespace SamplePlugin
 
             this.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
             {
-                HelpMessage = "A useful message to display in /xlhelp"
+                HelpMessage = "A useful message to display in /xlhelp and under your plugin in /xlplugins"
             });
 
             this.PluginInterface.UiBuilder.Draw += DrawUI;

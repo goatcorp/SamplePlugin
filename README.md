@@ -1,3 +1,7 @@
+# Don't click "Fork", click "Use this template"!
+![image](https://github.com/goatcorp/SamplePlugin/assets/16760685/d9732094-e1ed-4769-a70b-58ed2b92580c)
+
+
 # SamplePlugin
 
 Simple example plugin for Dalamud.

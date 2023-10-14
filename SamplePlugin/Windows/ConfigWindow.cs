@@ -20,7 +20,9 @@ public class ConfigWindow : Window, IDisposable
         this.Configuration = plugin.Configuration;
     }
 
-    public void Dispose() { }
+    public void Dispose()
+    {
+    }
 
     public override void Draw()
     {

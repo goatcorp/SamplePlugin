@@ -6,74 +6,76 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Plugin.Services;
 using SamplePlugin.Windows;
 
-namespace SamplePlugin
+namespace SamplePlugin;
+
+public sealed class Plugin : IDalamudPlugin
 {
-    public sealed class Plugin : IDalamudPlugin
+    private const string CommandName = "/pmycommand";
+
+    private DalamudPluginInterface PluginInterface { get; init; }
+    private ICommandManager CommandManager { get; init; }
+    public Configuration Configuration { get; init; }
+
+    public readonly WindowSystem WindowSystem = new("SamplePlugin");
+    private ConfigWindow ConfigWindow { get; init; }
+    private MainWindow MainWindow { get; init; }
+
+    public Plugin(
+        [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
+        [RequiredVersion("1.0")] ICommandManager commandManager,
+        [RequiredVersion("1.0")] ITextureProvider textureProvider)
     {
-        public string Name => "Sample Plugin";
-        private const string CommandName = "/pmycommand";
+        PluginInterface = pluginInterface;
+        CommandManager = commandManager;
 
-        private DalamudPluginInterface PluginInterface { get; init; }
-        private ICommandManager CommandManager { get; init; }
-        public Configuration Configuration { get; init; }
-        public WindowSystem WindowSystem = new("SamplePlugin");
+        Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
+        Configuration.Initialize(PluginInterface);
 
-        private ConfigWindow ConfigWindow { get; init; }
-        private MainWindow MainWindow { get; init; }
+        // you might normally want to embed resources and load them from the manifest stream
+        var file = new FileInfo(Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "goat.png"));
 
-        public Plugin(
-            [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
-            [RequiredVersion("1.0")] ICommandManager commandManager)
+        // ITextureProvider takes care of the image caching and dispose
+        var goatImage = textureProvider.GetTextureFromFile(file);
+
+        ConfigWindow = new ConfigWindow(this);
+        MainWindow = new MainWindow(this, goatImage);
+
+        WindowSystem.AddWindow(ConfigWindow);
+        WindowSystem.AddWindow(MainWindow);
+
+        CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
         {
-            this.PluginInterface = pluginInterface;
-            this.CommandManager = commandManager;
+            HelpMessage = "A useful message to display in /xlhelp"
+        });
 
-            this.Configuration = this.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
-            this.Configuration.Initialize(this.PluginInterface);
+        PluginInterface.UiBuilder.Draw += DrawUI;
 
-            // you might normally want to embed resources and load them from the manifest stream
-            var imagePath = Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "goat.png");
-            var goatImage = this.PluginInterface.UiBuilder.LoadImage(imagePath);
+        // This adds a button to the plugin installer entry of this plugin which allows
+        // to toggle the display status of the configuration ui
+        PluginInterface.UiBuilder.OpenConfigUi += ToggleConfigUI;
 
-            ConfigWindow = new ConfigWindow(this);
-            MainWindow = new MainWindow(this, goatImage);
-            
-            WindowSystem.AddWindow(ConfigWindow);
-            WindowSystem.AddWindow(MainWindow);
-
-            this.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
-            {
-                HelpMessage = "A useful message to display in /xlhelp"
-            });
-
-            this.PluginInterface.UiBuilder.Draw += DrawUI;
-            this.PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
-        }
-
-        public void Dispose()
-        {
-            this.WindowSystem.RemoveAllWindows();
-            
-            ConfigWindow.Dispose();
-            MainWindow.Dispose();
-            
-            this.CommandManager.RemoveHandler(CommandName);
-        }
-
-        private void OnCommand(string command, string args)
-        {
-            // in response to the slash command, just display our main ui
-            MainWindow.IsOpen = true;
-        }
-
-        private void DrawUI()
-        {
-            this.WindowSystem.Draw();
-        }
-
-        public void DrawConfigUI()
-        {
-            ConfigWindow.IsOpen = true;
-        }
+        // Adds another button that is doing the same but for the main ui of the plugin
+        PluginInterface.UiBuilder.OpenMainUi += ToggleMainUI;
     }
+
+    public void Dispose()
+    {
+        WindowSystem.RemoveAllWindows();
+
+        ConfigWindow.Dispose();
+        MainWindow.Dispose();
+
+        CommandManager.RemoveHandler(CommandName);
+    }
+
+    private void OnCommand(string command, string args)
+    {
+        // in response to the slash command, just toggle the display status of our main ui
+        ToggleMainUI();
+    }
+
+    private void DrawUI() => WindowSystem.Draw();
+
+    public void ToggleConfigUI() => ConfigWindow.Toggle();
+    public void ToggleMainUI() => MainWindow.Toggle();
 }

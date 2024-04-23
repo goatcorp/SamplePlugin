@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="Dalamud.Plugin.Bootstrap.targets"/>
-
+<Project Sdk="Dalamud.NET.Sdk/9.0.1">
   <PropertyGroup>
     <Version>0.0.0.1</Version>
     <Description>A sample plugin.</Description>

@@ -10,32 +10,27 @@ namespace SamplePlugin;
 
 public sealed class Plugin : IDalamudPlugin
 {
+    [PluginService] internal static DalamudPluginInterface PluginInterface { get; private set; } = null!;
+    [PluginService] internal static ITextureProvider TextureProvider { get; private set; } = null!;
+    [PluginService] internal static ICommandManager CommandManager { get; private set; } = null!;
+
     private const string CommandName = "/pmycommand";
 
-    private DalamudPluginInterface PluginInterface { get; init; }
-    private ICommandManager CommandManager { get; init; }
     public Configuration Configuration { get; init; }
 
     public readonly WindowSystem WindowSystem = new("SamplePlugin");
     private ConfigWindow ConfigWindow { get; init; }
     private MainWindow MainWindow { get; init; }
 
-    public Plugin(DalamudPluginInterface pluginInterface, ICommandManager commandManager, ITextureProvider textureProvider)
+    public Plugin()
     {
-        PluginInterface = pluginInterface;
-        CommandManager = commandManager;
-
         Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
-        Configuration.Initialize(PluginInterface);
 
         // you might normally want to embed resources and load them from the manifest stream
-        var file = new FileInfo(Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "goat.png"));
-
-        // We take ownership over this Rent, so we are going to dispose it later
-        var goatImage = textureProvider.GetFromFile(file.FullName).RentAsync().Result;
+        var goatImagePath = Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "goat.png");
 
         ConfigWindow = new ConfigWindow(this);
-        MainWindow = new MainWindow(this, goatImage);
+        MainWindow = new MainWindow(this, goatImagePath);
 
         WindowSystem.AddWindow(ConfigWindow);
         WindowSystem.AddWindow(MainWindow);

@@ -20,10 +20,7 @@ public sealed class Plugin : IDalamudPlugin
     private ConfigWindow ConfigWindow { get; init; }
     private MainWindow MainWindow { get; init; }
 
-    public Plugin(
-        [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
-        [RequiredVersion("1.0")] ICommandManager commandManager,
-        [RequiredVersion("1.0")] ITextureProvider textureProvider)
+    public Plugin(DalamudPluginInterface pluginInterface, ICommandManager commandManager, ITextureProvider textureProvider)
     {
         PluginInterface = pluginInterface;
         CommandManager = commandManager;
@@ -34,8 +31,8 @@ public sealed class Plugin : IDalamudPlugin
         // you might normally want to embed resources and load them from the manifest stream
         var file = new FileInfo(Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "goat.png"));
 
-        // ITextureProvider takes care of the image caching and dispose
-        var goatImage = textureProvider.GetTextureFromFile(file);
+        // We take ownership over this Rent, so we are going to dispose it later
+        var goatImage = textureProvider.GetFromFile(file.FullName).RentAsync().Result;
 
         ConfigWindow = new ConfigWindow(this);
         MainWindow = new MainWindow(this, goatImage);

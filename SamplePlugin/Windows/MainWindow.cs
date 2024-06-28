@@ -28,7 +28,11 @@ public class MainWindow : Window, IDisposable
         Plugin = plugin;
     }
 
-    public void Dispose() { }
+    public void Dispose()
+    {
+        // Dispose after we took ownership earlier
+        GoatImage?.Dispose();
+    }
 
     public override void Draw()
     {

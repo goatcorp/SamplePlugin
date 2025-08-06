@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Numerics;
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
-using ImGuiNET;
 using Lumina.Excel.Sheets;
 
 namespace SamplePlugin.Windows;
@@ -13,8 +13,8 @@ public class MainWindow : Window, IDisposable
     private string GoatImagePath;
     private Plugin Plugin;
 
-    // We give this window a hidden ID using ##
-    // So that the user will see "My Amazing Window" as window title,
+    // We give this window a hidden ID using ##.
+    // The user will see "My Amazing Window" as window title,
     // but for ImGui the ID is "My Amazing Window##With a hidden ID"
     public MainWindow(Plugin plugin, string goatImagePath)
         : base("My Amazing Window##With a hidden ID", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
@@ -33,10 +33,6 @@ public class MainWindow : Window, IDisposable
 
     public override void Draw()
     {
-        // Do not use .Text() or any other formatted function like TextWrapped(), or SetTooltip().
-        // These expect formatting parameter if any part of the text contains a "%", which we can't
-        // provide through our bindings, leading to a Crash to Desktop.
-        // Replacements can be found in the ImGuiHelpers Class
         ImGui.TextUnformatted($"The random config bool is {Plugin.Configuration.SomePropertyToBeSavedAndWithADefault}");
 
         if (ImGui.Button("Show Settings"))
@@ -60,7 +56,7 @@ public class MainWindow : Window, IDisposable
                 {
                     using (ImRaii.PushIndent(55f))
                     {
-                        ImGui.Image(goatImage.ImGuiHandle, new Vector2(goatImage.Width, goatImage.Height));
+                        ImGui.Image(goatImage.Handle, goatImage.Size);
                     }
                 }
                 else
@@ -86,15 +82,14 @@ public class MainWindow : Window, IDisposable
                     return;
                 }
 
-                // ExtractText() should be the preferred method to read Lumina SeStrings,
-                // as ToString does not provide the actual text values, instead gives an encoded macro string.
-                ImGui.TextUnformatted($"Our current job is ({localPlayer.ClassJob.RowId}) \"{localPlayer.ClassJob.Value.Abbreviation.ExtractText()}\"");
+                // If you want to see the Macro representation of this SeString use `ToMacroString()`
+                ImGui.TextUnformatted($"Our current job is ({localPlayer.ClassJob.RowId}) \"{localPlayer.ClassJob.Value.Abbreviation}\"");
 
                 // Example for quarrying Lumina directly, getting the name of our current area.
                 var territoryId = Plugin.ClientState.TerritoryType;
                 if (Plugin.DataManager.GetExcelSheet<TerritoryType>().TryGetRow(territoryId, out var territoryRow))
                 {
-                    ImGui.TextUnformatted($"We are currently in ({territoryId}) \"{territoryRow.PlaceName.Value.Name.ExtractText()}\"");
+                    ImGui.TextUnformatted($"We are currently in ({territoryId}) \"{territoryRow.PlaceName.Value.Name}\"");
                 }
                 else
                 {

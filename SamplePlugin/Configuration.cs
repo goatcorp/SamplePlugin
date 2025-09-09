@@ -1,5 +1,4 @@
 ﻿using Dalamud.Configuration;
-using Dalamud.Plugin;
 using System;
 
 namespace SamplePlugin;
@@ -12,17 +11,9 @@ public class Configuration : IPluginConfiguration
     public bool IsConfigWindowMovable { get; set; } = true;
     public bool SomePropertyToBeSavedAndWithADefault { get; set; } = true;
 
-    // the below exist just to make saving less cumbersome
-    [NonSerialized]
-    private DalamudPluginInterface? PluginInterface;
-
-    public void Initialize(DalamudPluginInterface pluginInterface)
-    {
-        PluginInterface = pluginInterface;
-    }
-
+    // The below exist just to make saving less cumbersome
     public void Save()
     {
-        PluginInterface!.SavePluginConfig(this);
+        Plugin.PluginInterface.SavePluginConfig(this);
     }
 }

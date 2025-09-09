@@ -10,35 +10,30 @@ namespace SamplePlugin;
 
 public sealed class Plugin : IDalamudPlugin
 {
+    [PluginService] internal static IDalamudPluginInterface PluginInterface { get; private set; } = null!;
+    [PluginService] internal static ITextureProvider TextureProvider { get; private set; } = null!;
+    [PluginService] internal static ICommandManager CommandManager { get; private set; } = null!;
+    [PluginService] internal static IClientState ClientState { get; private set; } = null!;
+    [PluginService] internal static IDataManager DataManager { get; private set; } = null!;
+    [PluginService] internal static IPluginLog Log { get; private set; } = null!;
+
     private const string CommandName = "/pmycommand";
 
-    private DalamudPluginInterface PluginInterface { get; init; }
-    private ICommandManager CommandManager { get; init; }
     public Configuration Configuration { get; init; }
 
     public readonly WindowSystem WindowSystem = new("SamplePlugin");
     private ConfigWindow ConfigWindow { get; init; }
     private MainWindow MainWindow { get; init; }
 
-    public Plugin(
-        [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
-        [RequiredVersion("1.0")] ICommandManager commandManager,
-        [RequiredVersion("1.0")] ITextureProvider textureProvider)
+    public Plugin()
     {
-        PluginInterface = pluginInterface;
-        CommandManager = commandManager;
-
         Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
-        Configuration.Initialize(PluginInterface);
 
-        // you might normally want to embed resources and load them from the manifest stream
-        var file = new FileInfo(Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "goat.png"));
-
-        // ITextureProvider takes care of the image caching and dispose
-        var goatImage = textureProvider.GetTextureFromFile(file);
+        // You might normally want to embed resources and load them from the manifest stream
+        var goatImagePath = Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "goat.png");
 
         ConfigWindow = new ConfigWindow(this);
-        MainWindow = new MainWindow(this, goatImage);
+        MainWindow = new MainWindow(this, goatImagePath);
 
         WindowSystem.AddWindow(ConfigWindow);
         WindowSystem.AddWindow(MainWindow);
@@ -52,11 +47,16 @@ public sealed class Plugin : IDalamudPlugin
         PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
 
         // This adds a button to the plugin installer entry of this plugin which allows
-        // to toggle the display status of the configuration ui
+        // toggling the display status of the configuration ui
         PluginInterface.UiBuilder.OpenConfigUi += ConfigWindow.Toggle;
 
-        // Adds another button that is doing the same but for the main ui of the plugin
+        // Adds another button doing the same but for the main ui of the plugin
         PluginInterface.UiBuilder.OpenMainUi += ToggleMainUI;
+
+        // Add a simple message to the log with level set to information
+        // Use /xllog to open the log window in-game
+        // Example Output: 00:57:54.959 | INF | [SamplePlugin] ===A cool log message from Sample Plugin===
+        Log.Information($"===A cool log message from {PluginInterface.Manifest.Name}===");
     }
 
     public void Dispose()
@@ -64,7 +64,7 @@ public sealed class Plugin : IDalamudPlugin
         // Unregister all actions to not leak anythign during disposal of plugin
         PluginInterface.UiBuilder.Draw -= WindowSystem.Draw;
         PluginInterface.UiBuilder.OpenConfigUi -= ConfigWindow.Toggle;
-        PluginInterface.UiBuilder.OpenMainUi -= ToggleMainUI;
+        PluginInterface.UiBuilder.OpenMainUi -= MainWindow.Toggle;
         
         WindowSystem.RemoveAllWindows();
 
@@ -76,9 +76,7 @@ public sealed class Plugin : IDalamudPlugin
 
     private void OnCommand(string command, string args)
     {
-        // in response to the slash command, just toggle the display status of our main ui
-        ToggleMainUI();
+        // In response to the slash command, toggle the display status of our main ui
+        MainWindow.Toggle()
     }
-
-    public void ToggleMainUI() => MainWindow.Toggle();
 }

@@ -48,10 +48,10 @@ public sealed class Plugin : IDalamudPlugin
 
         // This adds a button to the plugin installer entry of this plugin which allows
         // toggling the display status of the configuration ui
-        PluginInterface.UiBuilder.OpenConfigUi += ConfigWindow.Toggle;
+        PluginInterface.UiBuilder.OpenConfigUi += ToggleConfigUi;
 
         // Adds another button doing the same but for the main ui of the plugin
-        PluginInterface.UiBuilder.OpenMainUi += ToggleMainUI;
+        PluginInterface.UiBuilder.OpenMainUi += ToggleMainUi;
 
         // Add a simple message to the log with level set to information
         // Use /xllog to open the log window in-game
@@ -63,8 +63,8 @@ public sealed class Plugin : IDalamudPlugin
     {
         // Unregister all actions to not leak anythign during disposal of plugin
         PluginInterface.UiBuilder.Draw -= WindowSystem.Draw;
-        PluginInterface.UiBuilder.OpenConfigUi -= ConfigWindow.Toggle;
-        PluginInterface.UiBuilder.OpenMainUi -= MainWindow.Toggle;
+        PluginInterface.UiBuilder.OpenConfigUi -= ToggleConfigUi;
+        PluginInterface.UiBuilder.OpenMainUi -= ToggleMainUi;
         
         WindowSystem.RemoveAllWindows();
 
@@ -77,6 +77,9 @@ public sealed class Plugin : IDalamudPlugin
     private void OnCommand(string command, string args)
     {
         // In response to the slash command, toggle the display status of our main ui
-        MainWindow.Toggle()
+        MainWindow.Toggle();
     }
+    
+    public void ToggleConfigUi() => ConfigWindow.Toggle();
+    public void ToggleMainUi() => MainWindow.Toggle();
 }

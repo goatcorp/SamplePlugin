@@ -7,7 +7,7 @@ namespace SamplePlugin.Windows;
 
 public class ConfigWindow : Window, IDisposable
 {
-    private Configuration Configuration;
+    private readonly Configuration configuration;
 
     // We give this window a constant ID using ###.
     // This allows for labels to be dynamic, like "{FPS Counter}fps###XYZ counter window",
@@ -20,7 +20,7 @@ public class ConfigWindow : Window, IDisposable
         Size = new Vector2(232, 90);
         SizeCondition = ImGuiCond.Always;
 
-        Configuration = plugin.Configuration;
+        configuration = plugin.Configuration;
     }
 
     public void Dispose() { }
@@ -28,7 +28,7 @@ public class ConfigWindow : Window, IDisposable
     public override void PreDraw()
     {
         // Flags must be added or removed before Draw() is being called, or they won't apply
-        if (Configuration.IsConfigWindowMovable)
+        if (configuration.IsConfigWindowMovable)
         {
             Flags &= ~ImGuiWindowFlags.NoMove;
         }
@@ -41,19 +41,19 @@ public class ConfigWindow : Window, IDisposable
     public override void Draw()
     {
         // Can't ref a property, so use a local copy
-        var configValue = Configuration.SomePropertyToBeSavedAndWithADefault;
+        var configValue = configuration.SomePropertyToBeSavedAndWithADefault;
         if (ImGui.Checkbox("Random Config Bool", ref configValue))
         {
-            Configuration.SomePropertyToBeSavedAndWithADefault = configValue;
+            configuration.SomePropertyToBeSavedAndWithADefault = configValue;
             // Can save immediately on change if you don't want to provide a "Save and Close" button
-            Configuration.Save();
+            configuration.Save();
         }
 
-        var movable = Configuration.IsConfigWindowMovable;
+        var movable = configuration.IsConfigWindowMovable;
         if (ImGui.Checkbox("Movable Config Window", ref movable))
         {
-            Configuration.IsConfigWindowMovable = movable;
-            Configuration.Save();
+            configuration.IsConfigWindowMovable = movable;
+            configuration.Save();
         }
     }
 }

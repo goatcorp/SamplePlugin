@@ -43,11 +43,12 @@ public sealed class Plugin : IDalamudPlugin
             HelpMessage = "A useful message to display in /xlhelp"
         });
 
-        PluginInterface.UiBuilder.Draw += DrawUI;
+        // Tell the UI system that we want our windows to be drawn throught he window system
+        PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
 
         // This adds a button to the plugin installer entry of this plugin which allows
         // toggling the display status of the configuration ui
-        PluginInterface.UiBuilder.OpenConfigUi += ToggleConfigUI;
+        PluginInterface.UiBuilder.OpenConfigUi += ConfigWindow.Toggle;
 
         // Adds another button doing the same but for the main ui of the plugin
         PluginInterface.UiBuilder.OpenMainUi += ToggleMainUI;
@@ -60,6 +61,11 @@ public sealed class Plugin : IDalamudPlugin
 
     public void Dispose()
     {
+        // Unregister all actions to not leak anythign during disposal of plugin
+        PluginInterface.UiBuilder.Draw -= WindowSystem.Draw;
+        PluginInterface.UiBuilder.OpenConfigUi -= ConfigWindow.Toggle;
+        PluginInterface.UiBuilder.OpenMainUi -= MainWindow.Toggle;
+        
         WindowSystem.RemoveAllWindows();
 
         ConfigWindow.Dispose();
@@ -71,11 +77,6 @@ public sealed class Plugin : IDalamudPlugin
     private void OnCommand(string command, string args)
     {
         // In response to the slash command, toggle the display status of our main ui
-        ToggleMainUI();
+        MainWindow.Toggle()
     }
-
-    private void DrawUI() => WindowSystem.Draw();
-
-    public void ToggleConfigUI() => ConfigWindow.Toggle();
-    public void ToggleMainUI() => MainWindow.Toggle();
 }

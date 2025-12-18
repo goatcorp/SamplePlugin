@@ -33,7 +33,7 @@ public class MainWindow : Window, IDisposable
 
     public override void Draw()
     {
-        ImGui.TextUnformatted($"The random config bool is {plugin.Configuration.SomePropertyToBeSavedAndWithADefault}");
+        ImGui.Text($"The random config bool is {plugin.Configuration.SomePropertyToBeSavedAndWithADefault}");
 
         if (ImGui.Button("Show Settings"))
         {
@@ -50,7 +50,7 @@ public class MainWindow : Window, IDisposable
             // Check if this child is drawing
             if (child.Success)
             {
-                ImGui.TextUnformatted("Have a goat:");
+                ImGui.Text("Have a goat:");
                 var goatImage = Plugin.TextureProvider.GetFromFile(goatImagePath).GetWrapOrDefault();
                 if (goatImage != null)
                 {
@@ -61,39 +61,40 @@ public class MainWindow : Window, IDisposable
                 }
                 else
                 {
-                    ImGui.TextUnformatted("Image not found.");
+                    ImGui.Text("Image not found.");
                 }
 
                 ImGuiHelpers.ScaledDummy(20.0f);
 
                 // Example for other services that Dalamud provides.
-                // ClientState provides a wrapper filled with information about the local player object and client.
+                // PlayerState provides a wrapper filled with information about the player character.
 
-                var localPlayer = Plugin.ClientState.LocalPlayer;
-                if (localPlayer == null)
+                var playerState = Plugin.PlayerState;
+                if (!playerState.IsLoaded)
                 {
-                    ImGui.TextUnformatted("Our local player is currently not loaded.");
+                    ImGui.Text("Our local player is currently not logged in.");
+                    return;
+                }
+                
+                if (!playerState.ClassJob.IsValid)
+                {
+                    ImGui.Text("Our current job is currently not valid.");
                     return;
                 }
 
-                if (!localPlayer.ClassJob.IsValid)
-                {
-                    ImGui.TextUnformatted("Our current job is currently not valid.");
-                    return;
-                }
+                // If you want to see the Macro representation of this SeString use `.ToMacroString()`
+                // More info about SeStrings: https://dalamud.dev/plugin-development/sestring/
+                ImGui.Text($"Our current job is ({playerState.ClassJob.RowId}) '{playerState.ClassJob.Value.Abbreviation}' with level {playerState.Level}");
 
-                // If you want to see the Macro representation of this SeString use `ToMacroString()`
-                ImGui.TextUnformatted($"Our current job is ({localPlayer.ClassJob.RowId}) \"{localPlayer.ClassJob.Value.Abbreviation}\"");
-
-                // Example for quarrying Lumina directly, getting the name of our current area.
+                // Example for querying Lumina, getting the name of our current area.
                 var territoryId = Plugin.ClientState.TerritoryType;
                 if (Plugin.DataManager.GetExcelSheet<TerritoryType>().TryGetRow(territoryId, out var territoryRow))
                 {
-                    ImGui.TextUnformatted($"We are currently in ({territoryId}) \"{territoryRow.PlaceName.Value.Name}\"");
+                    ImGui.Text($"We are currently in ({territoryId}) '{territoryRow.PlaceName.Value.Name}'");
                 }
                 else
                 {
-                    ImGui.TextUnformatted("Invalid territory.");
+                    ImGui.Text("Invalid territory.");
                 }
             }
         }

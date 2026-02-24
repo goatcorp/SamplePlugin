@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using Dalamud.Bindings.ImGui;
+using Dalamud.Interface.Textures;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
@@ -81,16 +82,35 @@ public class MainWindow : Window, IDisposable
                     ImGui.Text("Our current job is currently not valid.");
                     return;
                 }
-
+                
+                ImGui.AlignTextToFramePadding();
+                ImGui.Text($"Current job:");
+                
+                // Scaling hardcoded pixel values is important, as otherwise users with HUD scales above or below 100%
+                // won't be able to see everything.
+                ImGui.SameLine(120 * ImGuiHelpers.GlobalScale);
+                
+                // Get the icon id from a known offset + the class jobs id
+                var jobIconId = 62100 + playerState.ClassJob.RowId;
+                var iconTexture = Plugin.TextureProvider.GetFromGameIcon(new GameIconLookup(jobIconId)).GetWrapOrEmpty();
+                ImGui.Image(iconTexture.Handle, new Vector2(28, 28) * ImGuiHelpers.GlobalScale);
+                
+                ImGui.SameLine();
+                
                 // If you want to see the Macro representation of this SeString use `.ToMacroString()`
                 // More info about SeStrings: https://dalamud.dev/plugin-development/sestring/
-                ImGui.Text($"Our current job is ({playerState.ClassJob.RowId}) '{playerState.ClassJob.Value.Abbreviation}' with level {playerState.Level}");
-
+                ImGui.Text(playerState.ClassJob.Value.Abbreviation.ToString());
+                
+                ImGui.SameLine();
+                ImGui.Text($" [Level {playerState.Level}]");
+                
                 // Example for querying Lumina, getting the name of our current area.
                 var territoryId = Plugin.ClientState.TerritoryType;
                 if (Plugin.DataManager.GetExcelSheet<TerritoryType>().TryGetRow(territoryId, out var territoryRow))
                 {
-                    ImGui.Text($"We are currently in ({territoryId}) '{territoryRow.PlaceName.Value.Name}'");
+                    ImGui.Text($"Current location:");
+                    ImGui.SameLine(120 * ImGuiHelpers.GlobalScale);
+                    ImGui.Text(territoryRow.PlaceName.Value.Name.ToString());
                 }
                 else
                 {

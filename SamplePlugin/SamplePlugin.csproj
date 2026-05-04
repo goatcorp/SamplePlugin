@@ -2,9 +2,14 @@
 <Project Sdk="Dalamud.NET.Sdk/15.0.0">
   <PropertyGroup>
     <Version>0.0.0.1</Version>
-    <PackageProjectUrl>https://github.com/goatcorp/SamplePlugin</PackageProjectUrl>
-    <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
-    <IsPackable>false</IsPackable>
+    <!-- Manifest fields (see https://github.com/goatcorp/DalamudPackager/#csproj-manifests) -->
+    <Author>your name here</Author>
+    <Name>Sample Plugin</Name>
+    <Punchline>A short one-liner that shows up in /xlplugins.</Punchline>
+    <Description>A description that shows up in /xlplugins.
+List any major slash-command(s).</Description>
+    <RepoUrl>https://github.com/goatcorp/SamplePlugin</RepoUrl>
+    <Tags>sample;plugin;goats</Tags>
   </PropertyGroup>
 
   <ItemGroup>

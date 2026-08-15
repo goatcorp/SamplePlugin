@@ -6,8 +6,8 @@
     <Author>your name here</Author>
     <Name>Sample Plugin</Name>
     <Punchline>A short one-liner that shows up in /xlplugins.</Punchline>
-    <Description>A description that shows up in /xlplugins.
-List any major slash-command(s).</Description>
+    <Description>A brief overview of what your plugin does, highlighting its key features.
+This is shown when the user expands the plugin entry in /xlplugins.</Description>
     <RepoUrl>https://github.com/goatcorp/SamplePlugin</RepoUrl>
     <Tags>sample;plugin;goats</Tags>
   </PropertyGroup>
